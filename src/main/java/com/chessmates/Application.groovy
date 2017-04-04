@@ -7,16 +7,22 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
-
+/**
+ * This is the starting point of the application
+ */
 @SpringBootApplication
 class Application {
 
-    static void main(String[] args) {
+    /**
+     * Main entry method for the application
+     * @param args
+     */
+    def static void main(String[] args) {
         SpringApplication.run(Application, args)
     }
 
     @Bean
-    WebMvcConfigurer corsConfigurer() {
+    def WebMvcConfigurer corsConfigurer() {
         new WebMvcConfigurerAdapter() {
             @Override
             void addCorsMappings(CorsRegistry registry) {
