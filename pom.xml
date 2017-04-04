@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.janakerman</groupId>
-    <artifactId>chess-mates</artifactId>
+    <artifactId>chessmates</artifactId>
     <version>0.1.0</version>
 
     <properties>
