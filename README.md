@@ -2,3 +2,4 @@
 Statistics for your Lichess team 
 
 Documentation to follow
+ 
