@@ -17,8 +17,25 @@ class Application {
      * Main entry method for the application
      * @param args
      */
-    def static void main(String[] args) {
+    static void main(String[] args) {
         SpringApplication.run(Application, args)
+    }
+
+    /**
+     * Configuration for Spring MVC.
+     */
+    @Bean
+    WebMvcConfigurer createWebConfigurer() {
+        new WebMvcConfigurerAdapter() {
+
+            /**
+             * Enable CORS for all origins.
+             */
+            @Override
+            void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping('/**')
+            }
+        }
     }
 
 }
