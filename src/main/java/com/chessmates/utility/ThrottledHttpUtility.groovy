@@ -1,5 +1,6 @@
 package com.chessmates.utility
 
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 
 import java.time.LocalDateTime
@@ -49,7 +50,7 @@ class ThrottledHttpUtility implements HttpUtility {
             def is = connection.getInputStream()
 
             // Lichess API recommends wait time of 1 minutes after receiving 329 code.
-            if (connection.getResponseCode() == 329) {
+            if (connection.getResponseCode() == HttpStatus.TOO_MANY_REQUESTS.value()) {
                 // TODO: I know I know...
                 Thread.sleep(COOLDOWN_TIME_MILLIS)
             }

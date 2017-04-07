@@ -3,9 +3,11 @@ package com.chessmates.service
 import com.chessmates.model.Game
 import com.chessmates.model.Player
 import com.chessmates.utility.LichessApi
+import groovy.transform.TypeChecked
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
+import java.util.function.Function
 import java.util.stream.Collectors
 
 /**
@@ -32,11 +34,12 @@ class EntityServiceImpl implements EntityService {
                 .map { player -> player.username }
                 .collect(Collectors.toList())
 
+        // Get all unique games played between players.
         players.stream()
                 .map { player -> lichessApi.getGames player.id }
                 .flatMap { games -> games.stream() }
                 .distinct()
-                .filter { game -> scottLogicIds.containsAll(game.players.values()) }
+                .filter { Game game -> scottLogicIds.containsAll(game.players.values()) }
                 .collect(Collectors.toList())
     }
 }

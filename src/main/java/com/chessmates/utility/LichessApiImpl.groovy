@@ -16,6 +16,9 @@ import java.util.stream.Collectors
 class LichessApiImpl implements LichessApi {
 
     static String LICHESS_API_TEMPLATE = "https://en.lichess.org/api"
+    static String PAGE_SIZE_PLAYERS = 50
+    static String PAGE_SIZE_GAMES = 100
+    static String STARTING_PAGE = 1
 
     @Autowired
     HttpUtility utility
@@ -23,7 +26,7 @@ class LichessApiImpl implements LichessApi {
     @Override
     List<Player> getPlayers(String teamId) {
         // TODO: Handle multiple pages
-        def url = "${LICHESS_API_TEMPLATE}/user?team=${teamId}&nb=50&page=1"
+        def url = "${LICHESS_API_TEMPLATE}/user?team=${teamId}&nb=${PAGE_SIZE_PLAYERS}&page=${STARTING_PAGE}"
 
         // TODO: Implement real logging.
         println "REQUEST: players for team ${teamId}"
@@ -43,7 +46,7 @@ class LichessApiImpl implements LichessApi {
     @Override
     List<Game> getGames(String playerId) {
         // TODO: Handle multiple pages
-        def url = "${LICHESS_API_TEMPLATE}/user/${playerId}/games?nb=100&page=1"
+        def url = "${LICHESS_API_TEMPLATE}/user/${playerId}/games?nb=${PAGE_SIZE_GAMES}&page=${STARTING_PAGE}"
 
         println "REQUEST: games for player ${playerId}"
 
