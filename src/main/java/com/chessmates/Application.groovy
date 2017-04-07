@@ -21,14 +21,4 @@ class Application {
         SpringApplication.run(Application, args)
     }
 
-    @Bean
-    def WebMvcConfigurer corsConfigurer() {
-        new WebMvcConfigurerAdapter() {
-            @Override
-            void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping('/**')
-            }
-        }
-    }
-
 }
