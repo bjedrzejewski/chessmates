@@ -3,6 +3,7 @@ package com.chessmates.utility
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 
+import javax.net.ssl.HttpsURLConnection
 import java.time.LocalDateTime
 import static java.time.temporal.ChronoUnit.*
 
@@ -42,7 +43,7 @@ class ThrottledHttpUtility implements HttpUtility {
         try {
             // Build request
             def url = new URL(targetUrl)
-            connection = (HttpURLConnection)url.openConnection()
+            connection = (HttpsURLConnection)url.openConnection()
             connection.setRequestMethod 'GET'
             connection.setDoOutput true
 

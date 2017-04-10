@@ -1,5 +1,6 @@
 package com.chessmates
 
+import com.chessmates.utility.DisableSSL
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
@@ -18,6 +19,7 @@ class Application {
      * @param args
      */
     static void main(String[] args) {
+        DisableSSL.disableCertificatesValidation()
         SpringApplication.run(Application, args)
     }
 
