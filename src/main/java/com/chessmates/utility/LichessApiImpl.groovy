@@ -4,6 +4,8 @@ import com.chessmates.model.GameColor
 import com.chessmates.model.Game
 import com.chessmates.model.Player
 import groovy.json.JsonSlurper
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -20,16 +22,17 @@ class LichessApiImpl implements LichessApi {
     static String PAGE_SIZE_GAMES = 100
     static String STARTING_PAGE = 1
 
+    private static final Logger logger = LoggerFactory.getLogger(this.getClass())
+
     @Autowired
     HttpUtility httpUtility
 
     @Override
     List<Player> getPlayers(String teamId) {
+        logger.debug "Getting players in team: ${teamId}"
+
         // TODO: Handle multiple pages
         def url = "${LICHESS_API_TEMPLATE}/user?team=${teamId}&nb=${PAGE_SIZE_PLAYERS}&page=${STARTING_PAGE}"
-
-        // TODO: Implement real logging.
-        println "REQUEST: players for team ${teamId}"
 
         def json = httpUtility.get(url)
 
@@ -45,10 +48,10 @@ class LichessApiImpl implements LichessApi {
 
     @Override
     List<Game> getGames(String playerId) {
+        logger.debug "Getting games for player: ${playerId}"
+
         // TODO: Handle multiple pages
         def url = "${LICHESS_API_TEMPLATE}/user/${playerId}/games?nb=${PAGE_SIZE_GAMES}&page=${STARTING_PAGE}"
-
-        println "REQUEST: games for player ${playerId}"
 
         def json = httpUtility.get(url)
 
