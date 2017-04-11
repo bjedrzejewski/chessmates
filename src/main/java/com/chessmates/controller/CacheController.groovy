@@ -1,7 +1,10 @@
 package com.chessmates.controller
 
-import com.chessmates.utility.Cache
+import com.chessmates.Application
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.CacheManager
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -11,11 +14,13 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class CacheController {
 
-    Cache cache
+    private static final Logger logger = LoggerFactory.getLogger(CacheController)
+
+    CacheManager cacheManager
 
     @Autowired
-    CacheController(Cache cache) {
-        this.cache = cache
+    CacheController(CacheManager cacheManager) {
+        this.cacheManager = cacheManager
     }
 
     /**
@@ -23,7 +28,8 @@ class CacheController {
      */
     @GetMapping(value = "clearCache")
     void clearCache() {
-        cache.evictCache()
+        logger.debug "Manually clearing cache in response to 'clearCache' REST endpoint hit"
+        cacheManager.getCache(Application.REQUEST_CACHE_NAME).clear()
     }
 
 }
