@@ -8,7 +8,13 @@ import com.chessmates.model.Player
  */
 interface LichessApi {
 
-    LichessResultPage<Player> getPlayers(String teamId)
-    LichessResultPage<Game> getGames(String playerId)
+    /**
+     * Get the players of a given Lichess team.
+     */
+    LichessResultPage<Player> getPlayers(String teamId, int pageNumber)
+    /**
+     * Get games of a given player.
+     */
+    LichessResultPage<Game> getGames(String playerId, int pageNumber)
 
 }

@@ -21,7 +21,6 @@ class LichessApiImpl implements LichessApi {
     static String LICHESS_API_TEMPLATE = "https://en.lichess.org/api"
     static String PAGE_SIZE_PLAYERS = 50
     static String PAGE_SIZE_GAMES = 100
-    static String STARTING_PAGE = 1
 
     private static final Logger logger = LoggerFactory.getLogger(LichessApiImpl)
 
@@ -29,11 +28,11 @@ class LichessApiImpl implements LichessApi {
     HttpUtility httpUtility
 
     @Override
-    LichessResultPage<Player> getPlayers(String teamId) {
-        logger.debug "Getting players in team: ${teamId}"
+    LichessResultPage<Player> getPlayers(String teamId, int pageNumber) {
+        logger.debug "Getting players in team: ${teamId} page: ${pageNumber}"
 
         // TODO: Handle multiple pages
-        def url = "${LICHESS_API_TEMPLATE}/user?team=${teamId}&nb=${PAGE_SIZE_PLAYERS}&page=${STARTING_PAGE}"
+        def url = "${LICHESS_API_TEMPLATE}/user?team=${teamId}&nb=${PAGE_SIZE_PLAYERS}&page=${pageNumber}"
 
         def json = httpUtility.get(url)
         def paginatedResponse = new JsonSlurper().parseText(json)
@@ -45,11 +44,11 @@ class LichessApiImpl implements LichessApi {
     }
 
     @Override
-    LichessResultPage<Game> getGames(String playerId) {
-        logger.debug "Getting games for player: ${playerId}"
+    LichessResultPage<Game> getGames(String playerId, int pageNumber) {
+        logger.debug "Getting games for player: ${playerId} page: ${pageNumber}"
 
         // TODO: Handle multiple pages
-        def url = "${LICHESS_API_TEMPLATE}/user/${playerId}/games?nb=${PAGE_SIZE_GAMES}&page=${STARTING_PAGE}"
+        def url = "${LICHESS_API_TEMPLATE}/user/${playerId}/games?nb=${PAGE_SIZE_GAMES}&page=${pageNumber}"
 
         def json = httpUtility.get(url)
         def paginatedResponse = new JsonSlurper().parseText(json)

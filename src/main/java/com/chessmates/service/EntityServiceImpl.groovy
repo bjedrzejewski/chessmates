@@ -25,21 +25,21 @@ class EntityServiceImpl implements EntityService {
 
     @Override
     List<Player> getPlayers() {
-        lichessApi.getPlayers TEAM_NAME
+        lichessApi.getPlayers(TEAM_NAME, 1).results
     }
 
     @Override
     List<Game> getGames() {
-        def playerPageResult = lichessApi.getPlayers TEAM_NAME
+        def page = lichessApi.getPlayers TEAM_NAME, 1
 
-        def scottLogicIds = playerPageResult.results.stream()
+        def scottLogicIds = page.results.stream()
                 .map { player -> player.username }
                 .collect(Collectors.toList())
 
         // Get all unique games played between players.
-        playerPageResult.results.stream()
-                .map { player -> lichessApi.getGames player.id }
-                .flatMap { gamePageResults -> gamePageResults.results.stream() }
+        page.results.stream()
+                .map { player -> lichessApi.getGames(player.id, 1).results }
+                .flatMap { gamePageResults -> gamePageResults.stream() }
                 .distinct()
                 .filter { Game game -> scottLogicIds.containsAll(game.players.values()) }
                 .collect(Collectors.toList())
