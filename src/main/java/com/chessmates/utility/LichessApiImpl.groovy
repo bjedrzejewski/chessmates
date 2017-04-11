@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import java.util.function.Function
 import java.util.stream.Collectors
 
 /**
@@ -28,52 +29,66 @@ class LichessApiImpl implements LichessApi {
     HttpUtility httpUtility
 
     @Override
-    List<Player> getPlayers(String teamId) {
+    LichessResultPage<Player> getPlayers(String teamId) {
         logger.debug "Getting players in team: ${teamId}"
 
         // TODO: Handle multiple pages
         def url = "${LICHESS_API_TEMPLATE}/user?team=${teamId}&nb=${PAGE_SIZE_PLAYERS}&page=${STARTING_PAGE}"
 
         def json = httpUtility.get(url)
+        def paginatedResponse = new JsonSlurper().parseText(json)
 
-        def jsonSlurper = new JsonSlurper()
-        def paginatedResponse = jsonSlurper.parseText(json)
+        // Team API nests paginated response inside of a paginator field.
+        paginatedResponse = paginatedResponse?.paginator
 
-        List<Object> playerObjects = paginatedResponse?.paginator?.currentPageResults
-
-        return playerObjects.stream()
-                .map { playerObject -> parsePlayer(playerObject) }
-                .collect(Collectors.toList())
+        parsePage(paginatedResponse, LichessApiImpl.&parsePlayer)
     }
 
     @Override
-    List<Game> getGames(String playerId) {
+    LichessResultPage<Game> getGames(String playerId) {
         logger.debug "Getting games for player: ${playerId}"
 
         // TODO: Handle multiple pages
         def url = "${LICHESS_API_TEMPLATE}/user/${playerId}/games?nb=${PAGE_SIZE_GAMES}&page=${STARTING_PAGE}"
 
         def json = httpUtility.get(url)
+        def paginatedResponse = new JsonSlurper().parseText(json)
 
-        def jsonSlurper = new JsonSlurper()
-        def paginatedResponse = jsonSlurper.parseText(json)
-
-        // Doesn't have the paginator field in the response for games, unlike players response
-        List<Object> gameObjects = paginatedResponse?.currentPageResults
-
-        return gameObjects.stream()
-                .map { gameObject -> parseGame(gameObject) }
-                .collect(Collectors.toList())
+        parsePage(paginatedResponse, LichessApiImpl.&parseGame)
     }
 
-    private Player parsePlayer(Object playerObject) {
+    /**
+     * This method parses a Lichess results page.
+     *
+     * @param A parsed JSON response (already parsed into Object form from text)
+     * @param A parsing function that parses the result set into model objects
+     * @return A LichessResultPage representing the returned page of results parsed into model objects
+     */
+    private static <T> LichessResultPage<T> parsePage(Object paginatedResponse, Function<Object, T> parse) {
+        List<Object> resultObjects = paginatedResponse?.currentPageResults
+
+        def pageResults = resultObjects.stream()
+                .map(parse)
+                .collect(Collectors.toList())
+
+        new LichessResultPage<T>(
+                results: pageResults,
+                previousPage: paginatedResponse.previousPage,
+                currentPage: paginatedResponse.currentPage,
+                nextPage: paginatedResponse.nextPage,
+                numPages: paginatedResponse.numPages,
+                totalResults: paginatedResponse.totalResults
+        )
+    }
+
+    private static Player parsePlayer(Object playerObject) {
         new Player(
                 id: playerObject?.id,
                 username: playerObject?.username
         )
     }
 
-    private Game parseGame(Object gameObject) {
+    private static  Game parseGame(Object gameObject) {
         def playerMap = new HashMap<GameColor, String>()
         playerMap.put(GameColor.WHITE, (String)gameObject?.players?.white?.userId)
         playerMap.put(GameColor.BLACK, (String)gameObject?.players?.black?.userId)

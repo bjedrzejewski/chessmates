@@ -3,11 +3,9 @@ package com.chessmates.service
 import com.chessmates.model.Game
 import com.chessmates.model.Player
 import com.chessmates.utility.LichessApi
-import groovy.transform.TypeChecked
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
-import java.util.function.Function
 import java.util.stream.Collectors
 
 /**
@@ -18,8 +16,12 @@ class EntityServiceImpl implements EntityService {
 
     static final String TEAM_NAME = 'scott-logic'
 
+    private LichessApi lichessApi
+
     @Autowired
-    LichessApi lichessApi
+    EntityServiceImpl(LichessApi lichessApi) {
+        this.lichessApi = lichessApi
+    }
 
     @Override
     List<Player> getPlayers() {
@@ -28,16 +30,16 @@ class EntityServiceImpl implements EntityService {
 
     @Override
     List<Game> getGames() {
-        def players = lichessApi.getPlayers TEAM_NAME
+        def playerPageResult = lichessApi.getPlayers TEAM_NAME
 
-        def scottLogicIds = players.stream()
+        def scottLogicIds = playerPageResult.results.stream()
                 .map { player -> player.username }
                 .collect(Collectors.toList())
 
         // Get all unique games played between players.
-        players.stream()
+        playerPageResult.results.stream()
                 .map { player -> lichessApi.getGames player.id }
-                .flatMap { games -> games.stream() }
+                .flatMap { gamePageResults -> gamePageResults.results.stream() }
                 .distinct()
                 .filter { Game game -> scottLogicIds.containsAll(game.players.values()) }
                 .collect(Collectors.toList())
