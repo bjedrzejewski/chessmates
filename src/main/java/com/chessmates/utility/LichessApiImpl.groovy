@@ -22,7 +22,7 @@ class LichessApiImpl implements LichessApi {
     static String PAGE_SIZE_GAMES = 100
     static String STARTING_PAGE = 1
 
-    private static final Logger logger = LoggerFactory.getLogger(this.getClass())
+    private static final Logger logger = LoggerFactory.getLogger(LichessApiImpl)
 
     @Autowired
     HttpUtility httpUtility
