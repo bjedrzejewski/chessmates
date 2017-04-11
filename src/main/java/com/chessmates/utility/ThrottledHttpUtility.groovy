@@ -23,7 +23,7 @@ class ThrottledHttpUtility implements HttpUtility, Cache {
     Integer COOLDOWN_TIME_MILLIS = 60000
     LocalDateTime lastRequest
 
-    private static final Logger logger = LoggerFactory.getLogger(this.getClass())
+    private static final Logger logger = LoggerFactory.getLogger(ThrottledHttpUtility)
 
     @Override
     @Cacheable("requests")
