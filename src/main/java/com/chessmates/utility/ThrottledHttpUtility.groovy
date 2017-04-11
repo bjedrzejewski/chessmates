@@ -25,6 +25,9 @@ class ThrottledHttpUtility implements HttpUtility {
 
     private static final Logger logger = LoggerFactory.getLogger(ThrottledHttpUtility)
 
+    /**
+     * Makes a get request for given resource.
+     */
     @Override
     @Cacheable(Application.REQUEST_CACHE_NAME)
     String get(String targetUrl) {
@@ -48,42 +51,23 @@ class ThrottledHttpUtility implements HttpUtility {
      */
     private String getRequest(String targetUrl) {
         def connection
-
         try {
-            // Build request
-            def url = new URL(targetUrl)
-            logger.debug "Sending request: ${targetUrl}"
+            return ((HttpsURLConnection)targetUrl.toURL().openConnection()).with { conn ->
+                requestMethod = 'GET'
+                doOutput = true
 
-            connection = (HttpsURLConnection)url.openConnection()
-            connection.setRequestMethod 'GET'
-            connection.setDoOutput true
+                /* If we receive a 429 sleep the thread for 1 minute - this isn't a real solution just a quick semi-fix
+                trying to avoid getting an IP ban during development. */
+                if (responseCode == HttpStatus.TOO_MANY_REQUESTS.value()) {
+                    logger.warn "Received 429 in response to request: waiting ${COOLDOWN_TIME_MILLIS} (${targetUrl})"
+                    // TODO: I know I know...
+                    Thread.sleep(COOLDOWN_TIME_MILLIS)
+                }
 
-            // Get response
-            def is = connection.getInputStream()
-
-            // Lichess API recommends wait time of 1 minutes after receiving 429 code.
-            if (connection.getResponseCode() == HttpStatus.TOO_MANY_REQUESTS.value()) {
-                logger.warn "Received 429 in response to request: waiting ${COOLDOWN_TIME_MILLIS} (${targetUrl})"
-                // TODO: I know I know...
-                Thread.sleep(COOLDOWN_TIME_MILLIS)
+                // We're making http requests so we're assuming that we'll be getting back a HttpInputStream.
+                return ((InputStream)conn.getContent()).withReader { r -> r.text }
             }
-
-            def rd = new BufferedReader(new InputStreamReader(is))
-            def response = new StringBuffer()
-
-            def line
-            while((line = rd.readLine()) != null) {
-                response.append line
-                response.append '\r'
-            }
-            rd.close()
-            return response.toString()
-
-        } catch (Exception e) {
-            e.printStackTrace()
-            return null
         } finally {
-
             if(connection != null) {
                 connection.disconnect()
             }
