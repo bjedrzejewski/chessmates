@@ -21,7 +21,7 @@ class LichessApiImpl implements LichessApi {
     static String STARTING_PAGE = 1
 
     @Autowired
-    HttpUtility utility
+    HttpUtility httpUtility
 
     @Override
     List<Player> getPlayers(String teamId) {
@@ -31,7 +31,7 @@ class LichessApiImpl implements LichessApi {
         // TODO: Implement real logging.
         println "REQUEST: players for team ${teamId}"
 
-        def json = utility.get(url)
+        def json = httpUtility.get(url)
 
         def jsonSlurper = new JsonSlurper()
         def paginatedResponse = jsonSlurper.parseText(json)
@@ -50,7 +50,7 @@ class LichessApiImpl implements LichessApi {
 
         println "REQUEST: games for player ${playerId}"
 
-        def json = utility.get(url)
+        def json = httpUtility.get(url)
 
         def jsonSlurper = new JsonSlurper()
         def paginatedResponse = jsonSlurper.parseText(json)
