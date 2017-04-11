@@ -39,7 +39,10 @@ class ThrottledHttpUtility implements HttpUtility, Cache {
 
         getRequest targetUrl
     }
-
+    
+    /**
+     * Makes a get request for given resource.
+     */
     private String getRequest(String targetUrl) {
         def connection
 
