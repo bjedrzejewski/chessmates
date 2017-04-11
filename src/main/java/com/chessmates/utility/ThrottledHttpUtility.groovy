@@ -1,5 +1,7 @@
 package com.chessmates.utility
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpStatus
@@ -21,6 +23,7 @@ class ThrottledHttpUtility implements HttpUtility, Cache {
     Integer COOLDOWN_TIME_MILLIS = 60000
     LocalDateTime lastRequest
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass())
 
     @Override
     @Cacheable("requests")
@@ -31,7 +34,7 @@ class ThrottledHttpUtility implements HttpUtility, Cache {
             def millisSince = MILLIS.between(lastRequest, now)
 
             if (millisSince < THROTTLE_MILLIS) {
-                println "REQUEST: throttled - waiting ${THROTTLE_MILLIS - millisSince} millis"
+                logger.debug "Throttled request: waiting ${THROTTLE_MILLIS - millisSince} millis (${targetUrl})"
                 // TODO: I know I know...
                 Thread.sleep(THROTTLE_MILLIS - millisSince)
             }
@@ -49,6 +52,8 @@ class ThrottledHttpUtility implements HttpUtility, Cache {
         try {
             // Build request
             def url = new URL(targetUrl)
+            logger.debug "Sending request: ${targetUrl}"
+
             connection = (HttpsURLConnection)url.openConnection()
             connection.setRequestMethod 'GET'
             connection.setDoOutput true
@@ -56,8 +61,9 @@ class ThrottledHttpUtility implements HttpUtility, Cache {
             // Get response
             def is = connection.getInputStream()
 
-            // Lichess API recommends wait time of 1 minutes after receiving 329 code.
+            // Lichess API recommends wait time of 1 minutes after receiving 429 code.
             if (connection.getResponseCode() == HttpStatus.TOO_MANY_REQUESTS.value()) {
+                logger.warn "Received 429 in response to request: waiting ${COOLDOWN_TIME_MILLIS} (${targetUrl})"
                 // TODO: I know I know...
                 Thread.sleep(COOLDOWN_TIME_MILLIS)
             }
@@ -88,7 +94,6 @@ class ThrottledHttpUtility implements HttpUtility, Cache {
     @Override
     @CacheEvict(value = "requests", allEntries = true)
     void evictCache() {
-        // TODO: Replace with logging...
-        println "Evicting cache"
+        logger.debug "Evicting request cache"
     }
 }
