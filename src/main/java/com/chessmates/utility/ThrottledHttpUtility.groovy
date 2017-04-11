@@ -1,5 +1,7 @@
 package com.chessmates.utility
 
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 
@@ -12,7 +14,7 @@ import static java.time.temporal.ChronoUnit.*
  * Http utility that throttles requests.
  */
 @Component
-class ThrottledHttpUtility implements HttpUtility {
+class ThrottledHttpUtility implements HttpUtility, Cache {
 
     // TODO: Shouldn't be set here?
     Integer THROTTLE_MILLIS = 1000
@@ -21,6 +23,7 @@ class ThrottledHttpUtility implements HttpUtility {
 
 
     @Override
+    @Cacheable("requests")
     String get(String targetUrl) {
         def now = LocalDateTime.now()
 
@@ -77,5 +80,12 @@ class ThrottledHttpUtility implements HttpUtility {
             }
             lastRequest = LocalDateTime.now()
         }
+    }
+
+    @Override
+    @CacheEvict(value = "requests", allEntries = true)
+    void evictCache() {
+        // TODO: Replace with logging...
+        println "Evicting cache"
     }
 }
