@@ -3,10 +3,12 @@ package com.chessmates.service
 import com.chessmates.model.Game
 import com.chessmates.model.Player
 import com.chessmates.utility.LichessApi
+import com.chessmates.utility.LichessResultPage
 import org.apache.commons.lang3.tuple.ImmutablePair
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
+import java.util.function.Function
 import java.util.stream.Collectors
 
 /**
@@ -24,49 +26,63 @@ class EntityServiceImpl implements EntityService {
         this.lichessApi = lichessApi
     }
 
+    /**
+     * All SL players.
+     */
     @Override
     List<Player> getPlayers() {
-        lichessApi.getPlayers(TEAM_NAME, 1).results
+        def fetchPlayerPage = { String teamId, int pageNum ->
+            lichessApi.getPlayers(teamId, pageNum) }
+
+        getAllPages(fetchPlayerPage.curry(TEAM_NAME))
     }
 
+    /**
+     * Get all games between scott logic players.
+     */
     @Override
     List<Game> getAllTeamGames() {
         def players = getPlayers()
         def playerCombinations = uniqueCombinations(players)
 
+        def fetchGamePage = { Player player, Player opponent, int pageNum ->
+            lichessApi.getGames(player.id, opponent.id, pageNum) }
+
         playerCombinations.stream()
+            // Get all of the games for a pair of players.
             .map { playerCombination ->
                 def player = playerCombination.left
                 def opponent = playerCombination.right
 
-                getGames(player, opponent)
+                /* So functional! Bind the fetchGamePage with the player arguments. The getAllPages func isn't concerned
+                with any arguments other than pages. */
+                getAllPages(fetchGamePage.curry(player, opponent))
             }
             .flatMap { gamePageResults -> gamePageResults.stream() }
             .collect(Collectors.toList())
     }
 
     /**
-     * Get all games between two opponents.
-     *
-     * This method requests the full set of page results from the lichess API.
+     * Given a function that fetches a page of Lichess results, return every following page and return the results as
+     * a list.
      */
-    private List<Game> getGames(Player player, Player opponent) {
-        def games = new ArrayList<>()
+    static private <T> List<T> getAllPages(Function<Integer, LichessResultPage<T>> fetchPage) {
+        def items = []
 
-        // Inline closure to get a page of games and add the games to the results list.
-        def getPageResultsAndAppend = { int pageNumber ->
-            def page = lichessApi.getGames(player.id, opponent.id, pageNumber)
-            games.addAll(page.results)
+        // Inline closure to get a page of items and add the games to the results list.
+        def fetchPageResultAndAppend = { int pageNumber ->
+            def page = fetchPage.apply(pageNumber)
+            items.addAll(page.results)
             return page
         }
 
-        // Start at page one and keep requesting games until there are no more pages.
-        def previousPage = getPageResultsAndAppend(1)
+        // Start at page one and keep requesting pages until there are no more pages.
+        def previousPage = fetchPageResultAndAppend(1)
         while(previousPage?.nextPage != null) {
-            previousPage = getPageResultsAndAppend(previousPage.nextPage)
+            previousPage = fetchPageResultAndAppend(previousPage.nextPage)
         }
 
-        return games
+        return items
     }
 
     /**
