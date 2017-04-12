@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit
 class Application {
 
     static final String REQUEST_CACHE_NAME = 'requestCache'
+    static final int CACHE_EXPIRY_MINS = 30
 
     /**
      * Main entry method for the application
@@ -61,7 +62,7 @@ class Application {
     CacheManager createCacheManager() {
         // Create the cache itself
         def internalCache = CacheBuilder.newBuilder()
-                .expireAfterWrite(30, TimeUnit.MINUTES)
+                .expireAfterWrite(CACHE_EXPIRY_MINS, TimeUnit.MINUTES)
                 .build()
 
         // Feed to Spring's cache abstractions
