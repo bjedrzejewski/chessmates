@@ -31,7 +31,6 @@ class LichessApiImpl implements LichessApi {
     LichessResultPage<Player> getPlayers(String teamId, int pageNumber) {
         logger.debug "Getting players in team: ${teamId} page: ${pageNumber}"
 
-        // TODO: Handle multiple pages
         def url = "${LICHESS_API_TEMPLATE}/user?team=${teamId}&nb=${PAGE_SIZE_PLAYERS}&page=${pageNumber}"
 
         def json = httpUtility.get(url)
@@ -47,8 +46,19 @@ class LichessApiImpl implements LichessApi {
     LichessResultPage<Game> getGames(String playerId, int pageNumber) {
         logger.debug "Getting games for player: ${playerId} page: ${pageNumber}"
 
-        // TODO: Handle multiple pages
         def url = "${LICHESS_API_TEMPLATE}/user/${playerId}/games?nb=${PAGE_SIZE_GAMES}&page=${pageNumber}"
+
+        def json = httpUtility.get(url)
+        def paginatedResponse = new JsonSlurper().parseText(json)
+
+        parsePage(paginatedResponse, LichessApiImpl.&parseGame)
+    }
+
+    @Override
+    LichessResultPage<Game> getGames(String playerId, String opponentId, int pageNumber) {
+        logger.debug "Getting games for player: ${playerId} opponent: ${opponentId} page: ${pageNumber}"
+
+        def url = "${LICHESS_API_TEMPLATE}/games/vs/${playerId}/${opponentId}?nb=${PAGE_SIZE_GAMES}&page=${pageNumber}"
 
         def json = httpUtility.get(url)
         def paginatedResponse = new JsonSlurper().parseText(json)
@@ -75,8 +85,8 @@ class LichessApiImpl implements LichessApi {
                 previousPage: paginatedResponse.previousPage,
                 currentPage: paginatedResponse.currentPage,
                 nextPage: paginatedResponse.nextPage,
-                numPages: paginatedResponse.numPages,
-                totalResults: paginatedResponse.totalResults
+                numPages: paginatedResponse.nbPages,
+                totalResults: paginatedResponse.nbResults,
         )
     }
 
