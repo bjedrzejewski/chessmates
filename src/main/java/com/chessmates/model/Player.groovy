@@ -21,4 +21,18 @@ class Player {
 
     String getUsername() { username }
 
+    boolean equals(o) {
+        if (this.is(o)) return true
+        if (getClass() != o.class) return false
+
+        Player player = (Player) o
+
+        if (id != player.id) return false
+
+        return true
+    }
+
+    int hashCode() {
+        return id.hashCode()
+    }
 }

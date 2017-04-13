@@ -32,7 +32,7 @@ class EntityController {
 
 
     // TODO: Temporarily here in the controller. This will eventually be ran as part of a scheduled job.
-    @GetMapping(value = 'getLatest')
+    @GetMapping(value = 'latestGames')
     List<Game> getLatestGames() { entityService.getGamesUntilLatestFetched() }
 
 }
