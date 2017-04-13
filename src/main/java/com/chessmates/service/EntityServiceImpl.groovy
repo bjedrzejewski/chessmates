@@ -95,7 +95,7 @@ class EntityServiceImpl implements EntityService {
                 def games = resultSet.get()
 
                 if (games.size()) {
-                    latestGameMap.putIfAbsent(playerCombination, games.first())
+                    latestGameMap.put(playerCombination, games.first())
                 }
 
                 return games
