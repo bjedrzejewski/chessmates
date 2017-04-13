@@ -28,6 +28,6 @@ class EntityController {
      * Return a list of all unique games played between all team members.
      */
     @GetMapping(value = 'games')
-    List<Game> getGames() { entityService.getGames() }
+    List<Game> getGames() { entityService.getAllTeamGames() }
 
 }

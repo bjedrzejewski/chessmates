@@ -16,6 +16,6 @@ interface EntityService {
     /**
      * Returns a list of games played between team players.
      */
-    List<Game> getGames()
+    List<Game> getAllTeamGames()
 
 }
