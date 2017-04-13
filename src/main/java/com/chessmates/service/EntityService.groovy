@@ -18,4 +18,10 @@ interface EntityService {
      */
     List<Game> getAllTeamGames()
 
+    /**
+     * Get new games between scott logic players up to the latest game we have already fetched.
+     */
+    List<Game> getGamesUntilLatestFetched()
+
+
 }
