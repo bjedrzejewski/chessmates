@@ -20,7 +20,7 @@ class LichessResultSet<T> {
      * @param getPage Get a new results page for a given page number.
      * @param shouldStop Called for every result in a page - return true to stop, otherwise result set will stop building all pages fetched.
      */
-    LichessResultSet(GetPageFunction<T> getPage, Predicate<T> shouldStop) {
+    LichessResultSet(GetPageFunction<T> getPage, Predicate<T> shouldStop = { false }) {
         this.getPage = getPage
         this.shouldStop = shouldStop
     }
@@ -32,20 +32,20 @@ class LichessResultSet<T> {
         def items = []
 
         // Start at page one and keep requesting pages until there are no more pages.
-        def previousPage = getPage.apply(1)
-        items.addAll(getItemsFromPage(previousPage, shouldStop)['items'])
+        def currentPage = getPage.apply(1)
 
         // Loop around all following pages until the stop condition is fulfilled or we hit the end of the results.
-        while(previousPage?.nextPage != null) {
+        while(currentPage != null) {
 
-            def page = getPage.apply(previousPage.nextPage)
-            def pageResults = getItemsFromPage(page, shouldStop)
+            def pageResults = getItemsFromPage(currentPage, shouldStop)
 
             items.addAll(pageResults['items'])
 
             if (pageResults['stoppedEarly']) {
                 return items
             }
+
+            currentPage = currentPage.nextPage ? getPage.apply(currentPage.nextPage) : null
         }
 
         return items
@@ -60,7 +60,7 @@ class LichessResultSet<T> {
         def pageItems = []
         def iterator = page.results.iterator()
         T item
-        while ((item = iterator[0])) {
+        while ((item = iterator[0]) != null) {
 
             if (shouldStop.test(item)) {
                 return [items: pageItems, stoppedEarly: true]
