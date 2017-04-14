@@ -2,6 +2,7 @@ package com.chessmates.service
 
 import com.chessmates.model.Game
 import com.chessmates.model.Player
+import com.chessmates.utility.GetPageFunction
 import com.chessmates.utility.LichessApi
 import com.chessmates.utility.LichessResultSet
 import org.apache.commons.lang3.tuple.ImmutablePair
@@ -38,7 +39,7 @@ class EntityServiceImpl implements EntityService {
         def neverStop = { t -> false}
 
         def resultSet = new LichessResultSet<Player>(
-                (LichessResultSet.GetPageFunction)fetchPlayerPage.curry(TEAM_NAME),
+                (GetPageFunction)fetchPlayerPage.curry(TEAM_NAME),
                 neverStop
         )
 
@@ -88,7 +89,7 @@ class EntityServiceImpl implements EntityService {
                         /* So functional! Bind the fetchGamePage * stop condition with the player arguments. The getAllPages func isn't concerned
                         with any arguments. */
                         /* PS - groovy closures! Why don't you play nice with Java 8 functions?! */
-                        (LichessResultSet.GetPageFunction)fetchGamePage.curry(player, opponent),
+                        (GetPageFunction)fetchGamePage.curry(player, opponent),
                         gameIsLatest.curry(player, opponent),
                 )
 

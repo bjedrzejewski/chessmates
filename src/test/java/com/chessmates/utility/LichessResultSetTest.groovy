@@ -51,8 +51,8 @@ class LichessResultSetTest extends Specification {
     }
 
     /** Returns an implementation of GetPageFunction that simulates no pages. */
-    LichessResultSet.GetPageFunction<Integer> createEmptyPageFunction() {
-        return (LichessResultSet.GetPageFunction<Integer>){ Integer pageNum -> new LichessResultPage<Integer>(
+    GetPageFunction<Integer> createEmptyPageFunction() {
+        return (GetPageFunction<Integer>){ Integer pageNum -> new LichessResultPage<Integer>(
                 currentPage: 1,
                 previousPage: null,
                 nextPage: null,
@@ -63,8 +63,8 @@ class LichessResultSetTest extends Specification {
     }
 
     /** Returns an implementation of GetPageFunction. It simulates a result set of a given number of pages, with a given page size. */
-    LichessResultSet.GetPageFunction<Integer> createGetPageFunction(Integer totalPages = 1, Integer pageSize = 100) {
-        return (LichessResultSet.GetPageFunction<Integer>){ Integer pageNum ->
+    GetPageFunction<Integer> createGetPageFunction(Integer totalPages = 1, Integer pageSize = 100) {
+        return (GetPageFunction<Integer>){ Integer pageNum ->
 
             def nextPage = pageNum < totalPages ? pageNum + 1 : null
             def previousPage = pageNum > 1 ? pageNum - 1 : null

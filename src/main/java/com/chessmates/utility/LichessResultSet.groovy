@@ -8,8 +8,6 @@ import java.util.function.Predicate
  */
 class LichessResultSet<T> {
 
-    interface GetPageFunction<T> extends Function<Integer, LichessResultPage<T>> {}
-
     private GetPageFunction<T> getPage
     private Predicate<T> shouldStop
 
