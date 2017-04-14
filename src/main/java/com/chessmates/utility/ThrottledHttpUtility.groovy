@@ -19,9 +19,9 @@ import static java.time.temporal.ChronoUnit.*
 class ThrottledHttpUtility implements HttpUtility {
 
     // TODO: Shouldn't be set here?
-    Integer THROTTLE_MILLIS = 5000
-    Integer COOLDOWN_TIME_MILLIS = 60000
-    LocalDateTime lastRequest
+    private static final Integer THROTTLE_MILLIS = 5000
+    private static final Integer COOLDOWN_TIME_MILLIS = 60000
+    private LocalDateTime lastRequest
 
     private static final Logger logger = LoggerFactory.getLogger(ThrottledHttpUtility)
 

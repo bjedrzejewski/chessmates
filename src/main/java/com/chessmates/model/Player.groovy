@@ -8,18 +8,18 @@ class Player {
     /**
      * Lichess ID for the player entity.
      */
-    String id
+    final String id
 
     /**
      * Lichess username. The Lichess API provides both an ID and a username for a given player. At time of writing, these
      * are always equal.
      */
-    String username
+    final String username
 
-
-    String getId() { id }
-
-    String getUsername() { username }
+    Player(String id, String username) {
+        this.id = id
+        this.username = username
+    }
 
     boolean equals(o) {
         if (this.is(o)) return true

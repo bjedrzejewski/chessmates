@@ -53,12 +53,12 @@ class LichessResultSetTest extends Specification {
     /** Returns an implementation of GetPageFunction that simulates no pages. */
     GetPageFunction<Integer> createEmptyPageFunction() {
         return (GetPageFunction<Integer>){ Integer pageNum -> new LichessResultPage<Integer>(
-                currentPage: 1,
-                previousPage: null,
-                nextPage: null,
-                numPages: 1,
-                totalResults: 0,
-                results: []
+                1,
+                null,
+                null,
+                1,
+                0,
+                []
         )}
     }
 
@@ -75,12 +75,12 @@ class LichessResultSetTest extends Specification {
             def pageResults = pageFrom..pageTo
 
             return new LichessResultPage<Integer>(
-                currentPage: pageNum,
-                previousPage: previousPage,
-                nextPage: nextPage,
-                numPages: totalPages,
-                totalResults: totalResults,
-                results: pageResults
+                pageNum,
+                previousPage,
+                nextPage,
+                totalPages,
+                totalResults,
+                pageResults
             )
         }
     }

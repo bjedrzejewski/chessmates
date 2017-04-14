@@ -5,15 +5,12 @@ package com.chessmates.model
  */
 class Game {
     // TODO: Store more fields?
-    String id
-    Map<GameColor, String> players
+    final String id
+    final Map<GameColor, String> players
 
-    String getId() {
-        return id
-    }
-
-    Map<GameColor, String> getPlayers() {
-        return players
+    Game(String id, Map<GameColor, String> players) {
+        this.id = id
+        this.players = players
     }
 
     boolean equals(o) {

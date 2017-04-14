@@ -8,9 +8,8 @@ import java.util.function.Predicate
  */
 class LichessResultSet<T> {
 
-    private GetPageFunction<T> getPage
-    private Predicate<T> shouldStop
-
+    private final GetPageFunction<T> getPage
+    private final Predicate<T> shouldStop
 
     /**
      * The result set must be constructed with a set of closures defining certain aspects of its behaviour.

@@ -5,11 +5,20 @@ package com.chessmates.utility
  */
 class LichessResultPage<T> {
 
-    Integer currentPage
-    Integer previousPage
-    Integer nextPage
-    Integer numPages
-    Integer totalResults
-    List<T> results
+    final Integer currentPage
+    final Integer previousPage
+    final Integer nextPage
+    final Integer numPages
+    final Integer totalResults
+    final List<T> results
 
+    LichessResultPage(Integer currentPage, Integer previousPage, Integer nextPage, Integer numPages,
+                      Integer totalResults, List<T> results) {
+        this.currentPage = currentPage
+        this.previousPage = previousPage
+        this.nextPage = nextPage
+        this.numPages = numPages
+        this.totalResults = totalResults
+        this.results = results
+    }
 }
