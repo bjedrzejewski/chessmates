@@ -81,19 +81,19 @@ class LichessApiImpl implements LichessApi {
                 .collect(Collectors.toList())
 
         new LichessResultPage<T>(
-                results: pageResults,
-                previousPage: paginatedResponse.previousPage,
-                currentPage: paginatedResponse.currentPage,
-                nextPage: paginatedResponse.nextPage,
-                numPages: paginatedResponse.nbPages,
-                totalResults: paginatedResponse.nbResults,
+                (Integer)paginatedResponse.currentPage,
+                (Integer)paginatedResponse.previousPage,
+                (Integer)paginatedResponse.nextPage,
+                (Integer)paginatedResponse.nbPages,
+                (Integer)paginatedResponse.nbResults,
+                pageResults
         )
     }
 
     private static Player parsePlayer(Object playerObject) {
         new Player(
-                id: playerObject?.id,
-                username: playerObject?.username
+                (String)playerObject?.id,
+                (String)playerObject?.username
         )
     }
 
@@ -103,8 +103,8 @@ class LichessApiImpl implements LichessApi {
         playerMap.put(GameColor.BLACK, (String)gameObject?.players?.black?.userId)
 
         new Game(
-                id: gameObject?.id,
-                players: playerMap,
+                (String)gameObject?.id,
+                playerMap,
         )
     }
 

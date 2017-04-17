@@ -2,13 +2,14 @@ package com.chessmates.service
 
 import com.chessmates.model.Game
 import com.chessmates.model.Player
+import com.chessmates.utility.GetPageFunction
 import com.chessmates.utility.LichessApi
-import com.chessmates.utility.LichessResultPage
+import com.chessmates.utility.LichessResultSet
 import org.apache.commons.lang3.tuple.ImmutablePair
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
-import java.util.function.Function
 import java.util.stream.Collectors
 
 /**
@@ -20,6 +21,8 @@ class EntityServiceImpl implements EntityService {
     static final String TEAM_NAME = 'scott-logic'
 
     private LichessApi lichessApi
+    // TODO: Temporary - this wants to come from the database.
+    private Map<ImmutablePair, Game> playerIdToLatestGame = new HashMap<>() // A mapping of player IDs to their latest process game.
 
     @Autowired
     EntityServiceImpl(LichessApi lichessApi) {
@@ -31,10 +34,16 @@ class EntityServiceImpl implements EntityService {
      */
     @Override
     List<Player> getPlayers() {
-        def fetchPlayerPage = { String teamId, int pageNum ->
-            lichessApi.getPlayers(teamId, pageNum) }
+        def fetchPlayerPage = { String teamId, int pageNum -> lichessApi.getPlayers(teamId, pageNum) }
 
-        getAllPages(fetchPlayerPage.curry(TEAM_NAME))
+        def neverStop = { t -> false}
+
+        def resultSet = new LichessResultSet<Player>(
+                (GetPageFunction)fetchPlayerPage.curry(TEAM_NAME),
+                neverStop
+        )
+
+        resultSet.get()
     }
 
     /**
@@ -42,48 +51,62 @@ class EntityServiceImpl implements EntityService {
      */
     @Override
     List<Game> getAllTeamGames() {
-        def players = getPlayers()
-        def playerCombinations = uniqueCombinations(players)
-
-        def fetchGamePage = { Player player, Player opponent, int pageNum ->
-            lichessApi.getGames(player.id, opponent.id, pageNum) }
-
-        playerCombinations.stream()
-            // Get all of the games for a pair of players.
-            .map { playerCombination ->
-                def player = playerCombination.left
-                def opponent = playerCombination.right
-
-                /* So functional! Bind the fetchGamePage with the player arguments. The getAllPages func isn't concerned
-                with any arguments other than pages. */
-                getAllPages(fetchGamePage.curry(player, opponent))
-            }
-            .flatMap { gamePageResults -> gamePageResults.stream() }
-            .collect(Collectors.toList())
+        getGames(getPlayers())
     }
 
     /**
-     * Given a function that fetches a page of Lichess results, return every following page and return the results as
-     * a list.
+     * Get new games between scott logic players.
      */
-    static private <T> List<T> getAllPages(Function<Integer, LichessResultPage<T>> fetchPage) {
-        def items = []
+    List<Game> getGamesUntilLatestFetched() { getGames(getPlayers(), playerIdToLatestGame) }
 
-        // Inline closure to get a page of items and add the games to the results list.
-        def fetchPageResultAndAppend = { int pageNumber ->
-            def page = fetchPage.apply(pageNumber)
-            items.addAll(page.results)
-            return page
+    /**
+     * Get only new games for each individual player combination.
+     *
+     * If no map is provided all historical games will be fetched. Go get a coffee!
+     *
+     * @param players The players to get new games for.
+     * @param latestGameMap A map containing the latest game for each pair of opponents.
+     * @return A list of all new games.
+     */
+    private List<Game> getGames(List<Player> players, Map<ImmutablePair, Game> latestGameMap = new HashMap<>()) {
+
+        def fetchGamePage = { Player player, Player opponent, int pageNum -> lichessApi.getGames(player.id, opponent.id, pageNum) }
+
+        def gameIsLatest = { Player player, Player opponent, Game thisGame ->
+            thisGame == latestGameMap.get(new ImmutablePair(player, opponent))
         }
 
-        // Start at page one and keep requesting pages until there are no more pages.
-        def previousPage = fetchPageResultAndAppend(1)
-        while(previousPage?.nextPage != null) {
-            previousPage = fetchPageResultAndAppend(previousPage.nextPage)
-        }
+        def playerCombinations = uniqueCombinations(players)
 
-        return items
+        def games = playerCombinations.stream()
+            // Get all of the games for a pair of players.
+            .map { playerCombination ->
+
+                def player = playerCombination.left
+                def opponent = playerCombination.right
+
+                def resultSet = new LichessResultSet<Game>(
+                        /* So functional! Bind the fetchGamePage * stop condition with the player arguments. The getAllPages func isn't concerned
+                        with any arguments. */
+                        /* PS - groovy closures! Why don't you play nice with Java 8 functions?! */
+                        (GetPageFunction)fetchGamePage.curry(player, opponent),
+                        gameIsLatest.curry(player, opponent),
+                )
+
+                def games = resultSet.get()
+
+                if (games.size()) {
+                    latestGameMap.put(playerCombination, games.first())
+                }
+
+                return games
+            }
+            .flatMap { gamePageResults -> gamePageResults.stream() }
+            .collect(Collectors.toList())
+
+        return games
     }
+
 
     /**
      * Given an array of objects, return a list of all the unique combination between different objects.
@@ -99,7 +122,7 @@ class EntityServiceImpl implements EntityService {
                 def player = objects.get(playerIndex)
                 def opponent = objects.get(opponentIndex)
 
-                combinations.push(new ImmutablePair(player, opponent))
+                combinations.add(new ImmutablePair(player, opponent))
             }
             matchingIndex++
         }
