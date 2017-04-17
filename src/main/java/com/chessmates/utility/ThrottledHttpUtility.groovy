@@ -29,7 +29,7 @@ class ThrottledHttpUtility implements HttpUtility {
      * Makes a get request for given resource.
      */
     @Override
-    @Cacheable(Application.REQUEST_CACHE_NAME)
+    @Cacheable('requestCache')
     String get(String targetUrl) {
         def now = LocalDateTime.now()
 
