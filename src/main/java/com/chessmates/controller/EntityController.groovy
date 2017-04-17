@@ -28,11 +28,6 @@ class EntityController {
      * Return a list of all unique games played between all team members.
      */
     @GetMapping(value = 'games')
-    List<Game> getGames() { entityService.getAllTeamGames() }
-
-
-    // TODO: Temporarily here in the controller. This will eventually be ran as part of a scheduled job.
-    @GetMapping(value = 'latestGames')
-    List<Game> getLatestGames() { entityService.getGamesUntilLatestFetched() }
+    List<Game> getGames() { entityService.getGames() }
 
 }

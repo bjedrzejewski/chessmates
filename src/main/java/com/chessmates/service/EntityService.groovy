@@ -16,12 +16,6 @@ interface EntityService {
     /**
      * Returns a list of games played between team players.
      */
-    List<Game> getAllTeamGames()
-
-    /**
-     * Get new games between scott logic players up to the latest game we have already fetched.
-     */
-    List<Game> getGamesUntilLatestFetched()
-
+    List<Game> getGames()
 
 }
