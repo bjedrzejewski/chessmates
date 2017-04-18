@@ -1,0 +1,11 @@
+{
+  "paginator":{
+    "currentPage":1,
+    "maxPerPage":10,
+    "currentPageResults":[],
+    "nbResults":8,
+    "previousPage":null,
+    "nextPage":null,
+    "nbPages":1
+  }
+}

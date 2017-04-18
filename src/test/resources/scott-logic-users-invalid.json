@@ -1,0 +1,58 @@
+{
+  "paginator":{
+    "currentPage":1,
+    "maxPerPage":10,
+    "currentPageResults":[
+      {},
+      {
+        "id":"jfaker",
+        "username":"jfaker",
+        "online":false,
+        "profile":{
+
+        },
+        "perfs":{
+          "blitz":{
+            "games":0,
+            "rating":1500,
+            "rd":350,
+            "prov":true,
+            "prog":0
+          },
+          "bullet":{
+            "games":0,
+            "rating":1500,
+            "rd":350,
+            "prov":true,
+            "prog":0
+          },
+          "correspondence":{
+            "games":0,
+            "rating":1500,
+            "rd":350,
+            "prov":true,
+            "prog":0
+          },
+          "classical":{
+            "games":1,
+            "rating":1292,
+            "rd":250,
+            "prov":true,
+            "prog":0
+          }
+        },
+        "createdAt":1491581791131,
+        "seenAt":1491814223143,
+        "url":"https://lichess.org/@/jfaker"
+      },
+      {
+        "id": null,
+        "username": null
+      }
+    ],
+    "nbResults":2,
+    "previousPage":null,
+    "nextPage":null,
+    "nbPages":1
+  }
+}

@@ -7,6 +7,7 @@ import com.chessmates.utility.LichessApi
 import com.chessmates.utility.LichessResultSet
 import org.apache.commons.lang3.tuple.ImmutablePair
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 import java.util.stream.Collectors
@@ -18,6 +19,12 @@ import java.util.stream.Collectors
 class LichessDataServiceImpl implements LichessDataService {
 
     static final String TEAM_NAME = 'scott-logic'
+
+    @Value('${chessmates.lichess.api.user.pageSize}')
+    private Integer pageSizePlayers
+
+    @Value('${chessmates.lichess.api.game.pageSize}')
+    private Integer pageSizeGames
 
     private LichessApi lichessApi
 
@@ -34,7 +41,7 @@ class LichessDataServiceImpl implements LichessDataService {
      */
     @Override
     List<Player> getPlayers(String untilPlayerId) {
-        def fetchPlayerPage = { String teamId, int pageNum -> lichessApi.getPlayers(teamId, pageNum) }
+        def fetchPlayerPage = { String teamId, int pageNum -> lichessApi.getPlayers(teamId, pageNum, pageSizePlayers) }
         def stopAtPlayerId = { Player player -> player.id == untilPlayerId }
 
         def resultSet = new LichessResultSet<Player>(
@@ -57,7 +64,8 @@ class LichessDataServiceImpl implements LichessDataService {
     List<Game> getGames(List<Player> players, Map<ImmutablePair, Game> latestGameMap) {
         latestGameMap = latestGameMap ?: new HashMap<>()
 
-        def fetchGamePage = { Player player, Player opponent, int pageNum -> lichessApi.getGames(player.id, opponent.id, pageNum) }
+        def fetchGamePage = { Player player, Player opponent, int pageNum ->
+            lichessApi.getGames(player.id, opponent.id, pageNum, pageSizeGames) }
 
         def gameIsLatest = { Player player, Player opponent, Game thisGame ->
             thisGame == latestGameMap.get(new ImmutablePair(player, opponent))
@@ -98,6 +106,10 @@ class LichessDataServiceImpl implements LichessDataService {
      * Given an array of objects, return a list of all the unique combination between different objects.
      */
     static private <T> List<ImmutablePair<T, T>> uniqueCombinations(List<T> objects) {
+        if (!objects) {
+            return []
+        }
+
         def matchingIndex = 1
         def combinations = []
         def numPlayers = objects.size()

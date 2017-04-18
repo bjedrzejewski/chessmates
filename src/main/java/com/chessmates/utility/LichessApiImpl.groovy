@@ -18,20 +18,19 @@ import java.util.stream.Collectors
 @Component
 class LichessApiImpl implements LichessApi {
 
-    static String LICHESS_API_TEMPLATE = "https://en.lichess.org/api"
-    static String PAGE_SIZE_PLAYERS = 50
-    static String PAGE_SIZE_GAMES = 100
+    static final String PARSE_ERROR = 'Error parsing item'
 
     private static final Logger logger = LoggerFactory.getLogger(LichessApiImpl)
+    private static final String LICHESS_API_TEMPLATE = "https://en.lichess.org/api"
 
     @Autowired
     HttpUtility httpUtility
 
     @Override
-    LichessResultPage<Player> getPlayers(String teamId, int pageNumber) {
+    LichessResultPage<Player> getPlayers(String teamId, int pageNumber, int pageSize) {
         logger.debug "Getting players in team: ${teamId} page: ${pageNumber}"
 
-        def url = "${LICHESS_API_TEMPLATE}/user?team=${teamId}&nb=${PAGE_SIZE_PLAYERS}&page=${pageNumber}"
+        def url = "${LICHESS_API_TEMPLATE}/user?team=${teamId}&nb=${pageSize}&page=${pageNumber}"
 
         def json = httpUtility.get(url)
         def paginatedResponse = new JsonSlurper().parseText(json)
@@ -43,10 +42,10 @@ class LichessApiImpl implements LichessApi {
     }
 
     @Override
-    LichessResultPage<Game> getGames(String playerId, int pageNumber) {
+    LichessResultPage<Game> getGames(String playerId, int pageNumber, int pageSize ) {
         logger.debug "Getting games for player: ${playerId} page: ${pageNumber}"
 
-        def url = "${LICHESS_API_TEMPLATE}/user/${playerId}/games?nb=${PAGE_SIZE_GAMES}&page=${pageNumber}"
+        def url = "${LICHESS_API_TEMPLATE}/user/${playerId}/games?nb=${pageSize}&page=${pageNumber}"
 
         def json = httpUtility.get(url)
         def paginatedResponse = new JsonSlurper().parseText(json)
@@ -55,10 +54,10 @@ class LichessApiImpl implements LichessApi {
     }
 
     @Override
-    LichessResultPage<Game> getGames(String playerId, String opponentId, int pageNumber) {
+    LichessResultPage<Game> getGames(String playerId, String opponentId, int pageNumber, int pageSize) {
         logger.debug "Getting games for player: ${playerId} opponent: ${opponentId} page: ${pageNumber}"
 
-        def url = "${LICHESS_API_TEMPLATE}/games/vs/${playerId}/${opponentId}?nb=${PAGE_SIZE_GAMES}&page=${pageNumber}"
+        def url = "${LICHESS_API_TEMPLATE}/games/vs/${playerId}/${opponentId}?nb=${pageSize}&page=${pageNumber}"
 
         def json = httpUtility.get(url)
         def paginatedResponse = new JsonSlurper().parseText(json)
@@ -78,6 +77,7 @@ class LichessApiImpl implements LichessApi {
 
         def pageResults = resultObjects.stream()
                 .map(parse)
+                .filter {item -> item != null }
                 .collect(Collectors.toList())
 
         new LichessResultPage<T>(
@@ -91,19 +91,33 @@ class LichessApiImpl implements LichessApi {
     }
 
     private static Player parsePlayer(Object playerObject) {
+        final playerId = (String)playerObject?.id
+
+        if (!playerId) {
+            logger.warn PARSE_ERROR
+            return
+        }
+
         new Player(
-                (String)playerObject?.id,
+                playerId,
                 (String)playerObject?.username
         )
     }
 
     private static  Game parseGame(Object gameObject) {
-        def playerMap = new HashMap<GameColor, String>()
+        final gameId = (String)gameObject?.id
+
+        if (!gameId) {
+            logger.warn PARSE_ERROR
+            return null
+        }
+
+        final playerMap = new HashMap<GameColor, String>()
         playerMap.put(GameColor.WHITE, (String)gameObject?.players?.white?.userId)
         playerMap.put(GameColor.BLACK, (String)gameObject?.players?.black?.userId)
 
         new Game(
-                (String)gameObject?.id,
+                gameId,
                 playerMap,
         )
     }
