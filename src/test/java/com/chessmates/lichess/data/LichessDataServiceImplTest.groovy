@@ -1,5 +1,6 @@
-package com.chessmates.service
+package com.chessmates.lichess.data
 
+import com.chessmates.lichess.data.LichessDataServiceImpl
 import com.chessmates.model.Game
 import com.chessmates.model.Player
 import com.chessmates.utility.HttpUtility

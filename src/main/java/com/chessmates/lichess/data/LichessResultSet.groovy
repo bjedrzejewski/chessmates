@@ -1,6 +1,7 @@
-package com.chessmates.utility
+package com.chessmates.lichess.data
 
-import java.util.function.Function
+import com.chessmates.utility.GetPageFunction
+
 import java.util.function.Predicate
 
 /**

@@ -1,5 +1,7 @@
 package com.chessmates.utility
 
+import com.chessmates.lichess.data.LichessResultPage
+
 import java.util.function.Function
 
 /**
