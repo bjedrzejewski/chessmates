@@ -80,8 +80,8 @@ class LichessApiImpl implements LichessApi {
             try {
                 final item = parse.apply it
                 pageResults.add item
-            } catch (Exception e) {
-                logger.error e.message
+            } catch (IllegalArgumentException e) {
+                logger.error('Issue parsing Lichess page item', e)
             }
         }
 
