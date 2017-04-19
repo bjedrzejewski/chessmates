@@ -25,11 +25,11 @@ class LichessDataServiceImplTest extends Specification {
     @TestConfiguration
     private static class MockConfig {
 
-        final detatchedMockFactory = new DetachedMockFactory()
+        final detachedMockFactory = new DetachedMockFactory()
 
         @Bean
         HttpUtility httpUtility() {
-            return detatchedMockFactory.Mock(HttpUtility)
+            return detachedMockFactory.Mock(HttpUtility)
         }
 
     }
@@ -110,7 +110,7 @@ class LichessDataServiceImplTest extends Specification {
 
     def "ignores invalid players"() {
         when:
-        final players = service.getPlayers(null)
+        final players = service.getPlayers()
 
         then:
         httpUtility.get(Helper.TEAM_WITH_INVALID_USERS.url) >> Helper.loadFile(Helper.TEAM_WITH_INVALID_USERS.responseFile)
@@ -120,7 +120,7 @@ class LichessDataServiceImplTest extends Specification {
 
     def "returns empty list of players with empty data set"() {
         when:
-        final players = service.getPlayers(null)
+        final players = service.getPlayers()
 
         then:
         httpUtility.get(Helper.TEAM_WITH_EMPTY_USERS.url) >> Helper.loadFile(Helper.TEAM_WITH_EMPTY_USERS.responseFile)
@@ -128,11 +128,8 @@ class LichessDataServiceImplTest extends Specification {
     }
 
     def "returns full set of players when no latest player is provided"() {
-        given:
-        final latestPlayer = null
-
         when:
-        final players = service.getPlayers(latestPlayer)
+        final players = service.getPlayers()
 
         then:
         httpUtility.get(Helper.SCOTT_LOGIC_TEAM_1.url) >> Helper.loadFile(Helper.SCOTT_LOGIC_TEAM_1.responseFile)
@@ -187,10 +184,9 @@ class LichessDataServiceImplTest extends Specification {
     def "returns empty games when no players are provided"() {
         given:
         final players = null
-        final latestGames = null
 
         when:
-        final games = service.getGames(players, latestGames)
+        final games = service.getGames(players)
 
         then:
         games.size() == 0
@@ -198,7 +194,6 @@ class LichessDataServiceImplTest extends Specification {
 
     def "returns full set of games when no latest games are provided"() {
         given:
-        final latestGames = null
         final players = [
                 new Player('tf235', 'tf235'),
                 new Player('owennw', 'owennw'),
@@ -206,7 +201,7 @@ class LichessDataServiceImplTest extends Specification {
         ]
 
         when:
-        final games = service.getGames(players, latestGames)
+        final games = service.getGames(players)
 
         then:
         httpUtility.get(Helper.TF235_VS_OWENNW_1.url) >> Helper.loadFile(Helper.TF235_VS_OWENNW_1.responseFile)

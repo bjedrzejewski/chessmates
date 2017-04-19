@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import java.text.ParseException
 import java.util.function.Function
 import java.util.stream.Collectors
 
@@ -17,8 +18,6 @@ import java.util.stream.Collectors
  */
 @Component
 class LichessApiImpl implements LichessApi {
-
-    static final String PARSE_ERROR = 'Error parsing item'
 
     private static final Logger logger = LoggerFactory.getLogger(LichessApiImpl)
     private static final String LICHESS_API_TEMPLATE = "https://en.lichess.org/api"
@@ -74,11 +73,17 @@ class LichessApiImpl implements LichessApi {
      */
     private static <T> LichessResultPage<T> parsePage(Object paginatedResponse, Function<Object, T> parse) {
         List<Object> resultObjects = paginatedResponse?.currentPageResults
+        resultObjects = resultObjects ?: []
 
-        def pageResults = resultObjects.stream()
-                .map(parse)
-                .filter {item -> item != null }
-                .collect(Collectors.toList())
+        final pageResults = []
+        resultObjects.each {
+            try {
+                final item = parse.apply it
+                pageResults.add item
+            } catch (Exception e) {
+                logger.error e.message
+            }
+        }
 
         new LichessResultPage<T>(
                 (Integer)paginatedResponse.currentPage,
@@ -90,12 +95,13 @@ class LichessApiImpl implements LichessApi {
         )
     }
 
-    private static Player parsePlayer(Object playerObject) {
+    private static Player parsePlayer(Object playerObject) throws IllegalArgumentException {
         final playerId = (String)playerObject?.id
 
         if (!playerId) {
-            logger.warn PARSE_ERROR
-            return
+            final message = "Unable to parse Object to Player: ${playerId}"
+            logger.error message
+            throw new IllegalArgumentException(message)
         }
 
         new Player(
@@ -104,12 +110,11 @@ class LichessApiImpl implements LichessApi {
         )
     }
 
-    private static  Game parseGame(Object gameObject) {
+    private static  Game parseGame(Object gameObject) throws IllegalArgumentException {
         final gameId = (String)gameObject?.id
 
         if (!gameId) {
-            logger.warn PARSE_ERROR
-            return null
+            throw new IllegalArgumentException("Unable to parse Object to Game: ${gameObject}")
         }
 
         final playerMap = new HashMap<GameColor, String>()

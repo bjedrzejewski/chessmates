@@ -40,7 +40,7 @@ class LichessDataServiceImpl implements LichessDataService {
      * @return A list of all players.
      */
     @Override
-    List<Player> getPlayers(String untilPlayerId) {
+    List<Player> getPlayers(String untilPlayerId = null) {
         def fetchPlayerPage = { String teamId, int pageNum -> lichessApi.getPlayers(teamId, pageNum, pageSizePlayers) }
         def stopAtPlayerId = { Player player -> player.id == untilPlayerId }
 
@@ -61,7 +61,7 @@ class LichessDataServiceImpl implements LichessDataService {
      * @return A list of all new games.
      */
     @Override
-    List<Game> getGames(List<Player> players, Map<ImmutablePair, Game> latestGameMap) {
+    List<Game> getGames(List<Player> players, Map<ImmutablePair, Game> latestGameMap = null) {
         latestGameMap = latestGameMap ?: new HashMap<>()
 
         def fetchGamePage = { Player player, Player opponent, int pageNum ->
