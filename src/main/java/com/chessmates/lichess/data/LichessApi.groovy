@@ -1,4 +1,4 @@
-package com.chessmates.utility
+package com.chessmates.lichess.data
 
 import com.chessmates.model.Game
 import com.chessmates.model.Player

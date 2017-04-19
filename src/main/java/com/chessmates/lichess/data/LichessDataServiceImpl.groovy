@@ -1,10 +1,8 @@
-package com.chessmates.service
+package com.chessmates.lichess.data
 
 import com.chessmates.model.Game
 import com.chessmates.model.Player
 import com.chessmates.utility.GetPageFunction
-import com.chessmates.utility.LichessApi
-import com.chessmates.utility.LichessResultSet
 import org.apache.commons.lang3.tuple.ImmutablePair
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value

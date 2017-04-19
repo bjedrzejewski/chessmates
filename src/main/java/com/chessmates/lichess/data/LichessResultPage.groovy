@@ -1,4 +1,4 @@
-package com.chessmates.utility
+package com.chessmates.lichess.data
 
 /**
  * Represents a page of results from the Lichess API.
