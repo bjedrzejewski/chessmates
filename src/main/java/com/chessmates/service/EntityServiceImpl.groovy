@@ -1,8 +1,5 @@
 package com.chessmates.service
 
-import com.chessmates.lichess.data.LichessDataService
-import com.chessmates.model.Game
-import com.chessmates.model.Player
 import com.chessmates.repository.GameRepository
 import com.chessmates.repository.PlayerRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,12 +24,12 @@ class EntityServiceImpl implements EntityService {
      * Get all Lichess players.
      */
     @Override
-    List<Player> getPlayers() { playerRepository.findAll() }
+    List getPlayers() { playerRepository.findAll() }
 
     /**
      * Get all games between scott logic players.
      */
     @Override
-    List<Game> getGames() { gameRepository.findAll() }
+    List getGames() { gameRepository.findAll() }
 
 }

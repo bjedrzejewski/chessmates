@@ -1,7 +1,5 @@
 package com.chessmates.repository
 
-import com.chessmates.model.Game
-import com.chessmates.model.Player
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
@@ -13,22 +11,22 @@ import org.springframework.stereotype.Repository
 class MockGameRepository implements GameRepository {
     Logger logger = LoggerFactory.getLogger(MockGameRepository)
 
-    Map<String, Game> store = new HashMap()
+    Map store = new HashMap()
 
     @Override
-    void save(Game game) {
+    void save(Object game) {
         logger.debug "(Mock) Saving game: ${game}"
         store.put(game.id, game)
     }
 
     @Override
-    Game find(String gameId) {
+    Object find(String gameId) {
         logger.debug "(Mock) Fetching game: ${gameId}"
         store.get(gameId)
     }
 
     @Override
-    List<Player> findAll() {
+    List findAll() {
         new ArrayList(store.values())
     }
 }

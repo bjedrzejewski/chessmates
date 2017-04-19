@@ -1,11 +1,8 @@
 package com.chessmates.lichess.data
 
-import com.chessmates.model.Game
-import com.chessmates.model.Player
 import com.chessmates.repository.GameRepository
 import com.chessmates.repository.MetaDataRepository
 import com.chessmates.repository.PlayerRepository
-import com.chessmates.utility.GetPageFunction
 import org.apache.commons.lang3.tuple.ImmutablePair
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -47,19 +44,19 @@ class LichessDataServiceImpl implements LichessDataService {
      * @return A list of all players.
      */
     @Override
-    List<Player> getPlayers() {
+    List getPlayers() {
         final untilPlayerId = metaDataRepository.getLatestPlayer()
         final fetchPlayerPage = { String teamId, int pageNum -> lichessApi.getPlayers(teamId, pageNum, pageSizePlayers) }
-        final stopAtPlayerId = { Player player -> player == untilPlayerId }
+        final stopAtPlayerId = { player -> player == untilPlayerId }
 
-        final resultSet = new LichessResultSet<Player>(
-                (GetPageFunction)fetchPlayerPage.curry(TEAM_NAME),
+        final resultSet = new LichessResultSet(
+                fetchPlayerPage.curry(TEAM_NAME),
                 stopAtPlayerId
         )
 
         final players = resultSet.get()
 
-        players.each { playerRepository.save it }
+        players.each { player -> playerRepository.save player }
 
         if (players.size()) {
             metaDataRepository.saveLatestPlayer(players.first())
@@ -78,35 +75,36 @@ class LichessDataServiceImpl implements LichessDataService {
      * @return A list of all new games.
      */
     @Override
-    List<Game> getGames(List<Player> players) {
+    List getGames(List players) {
 
         final latestGameMap = metaDataRepository.getLatestGames()
 
-        def fetchGamePage = { Player player, Player opponent, int pageNum ->
+        def fetchGamePage = { player, opponent, int pageNum ->
             lichessApi.getGames(player.id, opponent.id, pageNum, pageSizeGames) }
 
-        def gameIsLatest = { Player player, Player opponent, Game thisGame ->
+        def gameIsLatest = { player, opponent, thisGame ->
             thisGame == latestGameMap.get(new ImmutablePair(player, opponent))
         }
 
         def playerCombinations = uniqueCombinations(players)
 
-        def games = playerCombinations.stream()
+        playerCombinations.stream()
         // Get all of the games for a pair of players.
             .map { playerCombination ->
 
                 def player = playerCombination.left
                 def opponent = playerCombination.right
 
-                def resultSet = new LichessResultSet<Game>(
+                def resultSet = new LichessResultSet(
                         /* So functional! Bind the fetchGamePage * stop condition with the player arguments. The getAllPages func isn't concerned
                         with any arguments. */
                         /* PS - groovy closures! Why don't you play nice with Java 8 functions?! */
-                        (GetPageFunction)fetchGamePage.curry(player, opponent),
+                        fetchGamePage.curry(player, opponent),
                         gameIsLatest.curry(player, opponent),
                 )
 
                 def games = resultSet.get()
+                games.each { game -> gameRepository.save game }
 
                 if (games.size()) {
                     metaDataRepository.saveLatestGame(player, opponent, games.first())
@@ -116,10 +114,6 @@ class LichessDataServiceImpl implements LichessDataService {
             }
             .flatMap { gamePageResults -> gamePageResults.stream() }
             .collect(Collectors.toList())
-
-        games.each { Game game -> gameRepository.save game }
-
-        return games
     }
 
     /**

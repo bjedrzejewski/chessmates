@@ -1,7 +1,5 @@
 package com.chessmates.repository
 
-import com.chessmates.model.Game
-import com.chessmates.model.Player
 import com.google.common.collect.ImmutableMap
 import org.apache.commons.lang3.tuple.ImmutablePair
 import org.slf4j.Logger
@@ -15,25 +13,25 @@ import org.springframework.stereotype.Repository
 class MockLichessMetaRepository implements MetaDataRepository {
     Logger logger = LoggerFactory.getLogger(MockLichessMetaRepository)
 
-    private Player latestPlayer
-    private Map<ImmutablePair<Player, Player>, Game> latestGamesForPlayers = new HashMap()
+    private latestPlayer
+    private Map latestGamesForPlayers = new HashMap()
 
-    void saveLatestPlayer(Player player) {
+    void saveLatestPlayer(player) {
         logger.debug "(Mock) Saving player ${player}"
         latestPlayer = player
     }
 
-    Player getLatestPlayer() {
+    def getLatestPlayer() {
         logger.debug "(Mock) Fetching latest player"
         latestPlayer
     }
 
-    void saveLatestGame(Player player, Player opponent, Game game) {
+    void saveLatestGame(player, opponent, game) {
         logger.debug "(Mock) Saving latest game: ${game} for player: ${player} opponent: ${opponent}"
         latestGamesForPlayers.put(new ImmutablePair(player, opponent), game)
     }
 
-    ImmutableMap<ImmutablePair<Player, Player>, Game> getLatestGames() {
+    ImmutableMap getLatestGames() {
         logger.debug "(Mock) Fetching latest games"
         ImmutableMap.builder()
             .putAll(latestGamesForPlayers)

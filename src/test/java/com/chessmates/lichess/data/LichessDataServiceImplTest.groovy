@@ -1,7 +1,5 @@
 package com.chessmates.lichess.data
 
-import com.chessmates.model.Game
-import com.chessmates.model.Player
 import com.chessmates.repository.GameRepository
 import com.chessmates.repository.MetaDataRepository
 import com.chessmates.repository.PlayerRepository
@@ -187,7 +185,7 @@ class LichessDataServiceImplTest extends Specification {
 
     def "stops fetching at provided player when latest player is provided"() {
         given:
-        metaDataRepository.getLatestPlayer() >> new Player('tf235', null)
+        metaDataRepository.getLatestPlayer() >> [id: 'tf235']
 
         and:
         httpUtility.get(Helper.SCOTT_LOGIC_TEAM_1.url) >> Helper.loadFile(Helper.SCOTT_LOGIC_TEAM_1.responseFile)
@@ -207,7 +205,7 @@ class LichessDataServiceImplTest extends Specification {
 
     def "saves players when new player is fetched"() {
         given:
-        metaDataRepository.getLatestPlayer() >> new Player('tf235', null)
+        metaDataRepository.getLatestPlayer() >> [id: 'tf235']
 
         and:
         httpUtility.get(Helper.SCOTT_LOGIC_TEAM_1.url) >> Helper.loadFile(Helper.SCOTT_LOGIC_TEAM_1.responseFile)
@@ -217,11 +215,11 @@ class LichessDataServiceImplTest extends Specification {
         service.getPlayers()
 
         then:
-        1 * playerRepository.save(new Player('jfaker', null))
-        1 * playerRepository.save(new Player('riciardos', null))
-        1 * playerRepository.save(new Player('samei07', null))
-        1 * playerRepository.save(new Player('sydeman', null))
-        1 * playerRepository.save(new Player('torrlane', null))
+        1 * playerRepository.save({ it.id == 'jfaker' })
+        1 * playerRepository.save({ it.id == 'riciardos' })
+        1 * playerRepository.save({ it.id == 'samei07' })
+        1 * playerRepository.save({ it.id == 'sydeman' })
+        1 * playerRepository.save({ it.id == 'torrlane' })
     }
 
     def "saves latest player when players are fetched"() {
@@ -233,7 +231,7 @@ class LichessDataServiceImplTest extends Specification {
         service.getPlayers()
 
         then:
-        1 * metaDataRepository.saveLatestPlayer(new Player('jfaker', null))
+        1 * metaDataRepository.saveLatestPlayer({ it.id == 'jfaker' })
     }
 
     // Games tests.
@@ -241,8 +239,8 @@ class LichessDataServiceImplTest extends Specification {
     def "ignores invalid games"() {
         given:
         final players = [
-                new Player('tf235', 'tf235'),
-                new Player('owennw', 'owennw'),
+                [id: 'tf235'],
+                [id: 'owennw']
         ]
 
         and:
@@ -273,9 +271,9 @@ class LichessDataServiceImplTest extends Specification {
     def "returns full set of games when no latest games are provided"() {
         given:
         final players = [
-                new Player('tf235', 'tf235'),
-                new Player('owennw', 'owennw'),
-                new Player('jedrus07', 'jedrus07')
+                [id: 'tf235'],
+                [id: 'owennw'],
+                [id: 'jedrus07']
         ]
 
         and:
@@ -297,16 +295,16 @@ class LichessDataServiceImplTest extends Specification {
     def "stops fetching at provided game when latest games are provided"() {
         given:
         final players = [
-                new Player('tf235', 'tf235'),
-                new Player('owennw', 'owennw'),
-                new Player('jedrus07', 'jedrus07')
+                [id: 'tf235'],
+                [id: 'owennw'],
+                [id: 'jedrus07']
         ]
 
         and:
         metaDataRepository.getLatestGames() >> ImmutableMap.builder().putAll([
-                (new ImmutablePair(players[0], players[1])): new Game('tlicb8yX', null),
-                (new ImmutablePair(players[0], players[2])): new Game('ThSBEyjg', null),
-                (new ImmutablePair(players[1], players[2])): new Game('0Qk6CAqq', null)
+                (new ImmutablePair(players[0], players[1])): [id: 'tlicb8yX'],
+                (new ImmutablePair(players[0], players[2])): [id: 'ThSBEyjg'],
+                (new ImmutablePair(players[1], players[2])): [id: '0Qk6CAqq']
         ]).build()
 
         and:
@@ -327,9 +325,9 @@ class LichessDataServiceImplTest extends Specification {
     def "saves game when new game is fetched"() {
         given:
         final players = [
-                new Player('tf235', 'tf235'),
-                new Player('owennw', 'owennw'),
-                new Player('jedrus07', 'jedrus07')
+                [id: 'tf235'],
+                [id: 'owennw'],
+                [id: 'jedrus07']
         ]
 
         and:
@@ -345,15 +343,15 @@ class LichessDataServiceImplTest extends Specification {
         service.getGames(players)
 
         then:
-        56 * gameRepository.save(_ as Game)
+        56 * gameRepository.save(_)
     }
 
     def "saves latest game for each player when games are fetched"() {
         given:
         final players = [
-                new Player('tf235', 'tf235'),
-                new Player('owennw', 'owennw'),
-                new Player('jedrus07', 'jedrus07')
+                [id: 'tf235'],
+                [id: 'owennw'],
+                [id: 'jedrus07']
         ]
 
         and:
@@ -369,9 +367,9 @@ class LichessDataServiceImplTest extends Specification {
         service.getGames(players)
 
         then:
-        1 * metaDataRepository.saveLatestGame(players[0], players[1], new Game('OBBHfGOC', null))
-        1 * metaDataRepository.saveLatestGame(players[0], players[2], new Game('uP0rXPYL', null))
-        1 * metaDataRepository.saveLatestGame(players[1], players[2], new Game('1J73NgR1', null))
+        1 * metaDataRepository.saveLatestGame(players[0], players[1], [id: 'OBBHfGOC'])
+        1 * metaDataRepository.saveLatestGame(players[0], players[2], [id: 'uP0rXPYL'])
+        1 * metaDataRepository.saveLatestGame(players[1], players[2], [id: '1J73NgR1'])
     }
 
 }
