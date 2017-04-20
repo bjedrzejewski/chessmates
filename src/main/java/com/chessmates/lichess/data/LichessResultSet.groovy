@@ -1,16 +1,15 @@
 package com.chessmates.lichess.data
 
-import com.chessmates.utility.GetPageFunction
-
+import java.util.function.Function
 import java.util.function.Predicate
 
 /**
  * Class responsible for fetching a full lichess result set from multiple pages.
  */
-class LichessResultSet<T> {
+class LichessResultSet {
 
-    private final GetPageFunction<T> getPage
-    private final Predicate<T> shouldStop
+    private final Function<Integer, Object> getPage
+    private final Predicate shouldStop
 
     /**
      * The result set must be constructed with a set of closures defining certain aspects of its behaviour.
@@ -18,7 +17,7 @@ class LichessResultSet<T> {
      * @param getPage Get a new results page for a given page number.
      * @param shouldStop Called for every result in a page - return true to stop, otherwise result set will stop building all pages fetched.
      */
-    LichessResultSet(GetPageFunction<T> getPage, Predicate<T> shouldStop = { false }) {
+    LichessResultSet(Function<Integer, Object> getPage, Predicate shouldStop = { false }) {
         this.getPage = getPage
         this.shouldStop = shouldStop
     }
@@ -26,7 +25,7 @@ class LichessResultSet<T> {
     /**
      * Get all pages for the given result set.
      */
-    List<T> get() {
+    List get() {
         def items = []
 
         // Start at page one and keep requesting pages until there are no more pages.
@@ -54,10 +53,10 @@ class LichessResultSet<T> {
      * The results are returned in a Map, with the page items stored in `items`, and a boolean `stoppedEarly` indicating
      * whether the `stopCondition` was met.
      */
-    static private <T> Map getItemsFromPage(LichessResultPage<T> page, Predicate<T> shouldStop) {
+    static private Map getItemsFromPage(Object page, Predicate shouldStop) {
         def pageItems = []
-        def iterator = page.results.iterator()
-        T item
+        def iterator = page.currentPageResults.iterator()
+        def item
         while ((item = iterator[0]) != null) {
 
             if (shouldStop.test(item)) {

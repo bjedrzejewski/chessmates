@@ -1,8 +1,8 @@
 package com.chessmates.lichess.data
 
-import com.chessmates.utility.GetPageFunction
 import spock.lang.Specification
 
+import java.util.function.Function
 import java.util.function.Predicate
 
 class LichessResultSetTest extends Specification {
@@ -52,20 +52,23 @@ class LichessResultSetTest extends Specification {
     }
 
     /** Returns an implementation of GetPageFunction that simulates no pages. */
-    GetPageFunction<Integer> createEmptyPageFunction() {
-        return (GetPageFunction<Integer>){ Integer pageNum -> new LichessResultPage<Integer>(
-                1,
-                null,
-                null,
-                1,
-                0,
-                []
-        )}
+    Function<Integer, Object> createEmptyPageFunction() {
+        return { Integer pageNum ->
+            [
+                    currentPage: 1,
+                    currentPageResults: [],
+                    maxPerPage: 100,
+                    nbPages: 1,
+                    nbResults: 0,
+                    nextPage: null,
+                    previousPage: null
+            ]
+        }
     }
 
     /** Returns an implementation of GetPageFunction. It simulates a result set of a given number of pages, with a given page size. */
-    GetPageFunction<Integer> createGetPageFunction(Integer totalPages = 1, Integer pageSize = 100) {
-        return (GetPageFunction<Integer>){ Integer pageNum ->
+    Function<Integer, Object> createGetPageFunction(Integer totalPages = 1, Integer pageSize = 100) {
+        return (Function<Integer, Object>){ Integer pageNum ->
 
             def nextPage = pageNum < totalPages ? pageNum + 1 : null
             def previousPage = pageNum > 1 ? pageNum - 1 : null
@@ -75,14 +78,15 @@ class LichessResultSetTest extends Specification {
             def pageTo = (pageNum* pageSize)
             def pageResults = pageFrom..pageTo
 
-            return new LichessResultPage<Integer>(
-                pageNum,
-                previousPage,
-                nextPage,
-                totalPages,
-                totalResults,
-                pageResults
-            )
+            [
+                    currentPage: pageNum,
+                    currentPageResults: pageResults,
+                    maxPerPage: pageSize,
+                    nbPages: totalPages,
+                    nbResults: totalResults,
+                    nextPage: nextPage,
+                    previousPage: previousPage
+            ]
         }
     }
 

@@ -2,15 +2,18 @@ package com.chessmates
 
 import com.chessmates.utility.DisableSSL
 import com.google.common.cache.CacheBuilder
+import jdk.nashorn.internal.runtime.regexp.joni.Config
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.cache.guava.GuavaCache
 import org.springframework.cache.support.SimpleCacheManager
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
@@ -23,7 +26,7 @@ import java.util.concurrent.TimeUnit
  */
 @SpringBootApplication
 @EnableCaching
-@EnableScheduling
+@EnableScheduling // We includ the spring-boot-starter-actuator which also enables scheduling.
 class Application {
 
     static final String REQUEST_CACHE_NAME = 'requestCache'
