@@ -110,6 +110,8 @@ class LichessDataServiceImplTest extends Specification {
             Resources.toString(Resources.getResource(fileName), Charsets.UTF_8)
         }
 
+        static boolean entityIs(id, entity) { entity.id == id }
+
     }
 
     @Subject
@@ -367,9 +369,9 @@ class LichessDataServiceImplTest extends Specification {
         service.getGames(players)
 
         then:
-        1 * metaDataRepository.saveLatestGame(players[0], players[1], [id: 'OBBHfGOC'])
-        1 * metaDataRepository.saveLatestGame(players[0], players[2], [id: 'uP0rXPYL'])
-        1 * metaDataRepository.saveLatestGame(players[1], players[2], [id: '1J73NgR1'])
+        1 * metaDataRepository.saveLatestGame({ it.id == 'tf235' }, { it.id == 'owennw' }, { it.id == 'OBBHfGOC' })
+        1 * metaDataRepository.saveLatestGame({ it.id == 'tf235' }, { it.id == 'jedrus07' }, { it.id == 'uP0rXPYL' })
+        1 * metaDataRepository.saveLatestGame({ it.id == 'owennw' }, { it.id == 'jedrus07' }, { it.id == '1J73NgR1' })
     }
 
 }

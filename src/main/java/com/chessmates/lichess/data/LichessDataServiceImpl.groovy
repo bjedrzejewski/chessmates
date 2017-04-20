@@ -45,19 +45,24 @@ class LichessDataServiceImpl implements LichessDataService {
      */
     @Override
     List getPlayers() {
-        final untilPlayerId = metaDataRepository.getLatestPlayer()
+        final untilPlayer = metaDataRepository.getLatestPlayer()
         final fetchPlayerPage = { String teamId, int pageNum -> lichessApi.getPlayers(teamId, pageNum, pageSizePlayers) }
-        final stopAtPlayerId = { player -> player == untilPlayerId }
+        final stopAtPlayerId = { player ->
+            if (!untilPlayer) false
+            else  player.id == untilPlayer?.id
+        }
 
         final resultSet = new LichessResultSet(
                 fetchPlayerPage.curry(TEAM_NAME),
                 stopAtPlayerId
         )
 
-        final players = resultSet.get()
+        List players = resultSet.get()
+                .stream()
+                .filter(LichessEntityValidator.&isValid)
+                .collect(Collectors.toList())
 
-        players.each { player -> playerRepository.save player }
-
+        players.each(playerRepository.&save)
         if (players.size()) {
             metaDataRepository.saveLatestPlayer(players.first())
         }
@@ -83,7 +88,9 @@ class LichessDataServiceImpl implements LichessDataService {
             lichessApi.getGames(player.id, opponent.id, pageNum, pageSizeGames) }
 
         def gameIsLatest = { player, opponent, thisGame ->
-            thisGame == latestGameMap.get(new ImmutablePair(player, opponent))
+            def latestGameForOpponents = latestGameMap.get(new ImmutablePair(player, opponent))
+            if (!latestGameForOpponents) return false
+            else thisGame.id == latestGameForOpponents?.id
         }
 
         def playerCombinations = uniqueCombinations(players)
@@ -103,9 +110,12 @@ class LichessDataServiceImpl implements LichessDataService {
                         gameIsLatest.curry(player, opponent),
                 )
 
-                def games = resultSet.get()
-                games.each { game -> gameRepository.save game }
+                List games = resultSet.get()
+                        .stream()
+                        .filter(LichessEntityValidator.&isValid)
+                        .collect(Collectors.toList())
 
+                games.each(gameRepository.&save)
                 if (games.size()) {
                     metaDataRepository.saveLatestGame(player, opponent, games.first())
                 }
