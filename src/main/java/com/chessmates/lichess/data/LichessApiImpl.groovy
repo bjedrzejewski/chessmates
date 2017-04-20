@@ -20,7 +20,7 @@ class LichessApiImpl implements LichessApi {
     HttpUtility httpUtility
 
     @Override
-    getPlayers(String teamId, int pageNumber, int pageSize) {
+    getPlayersPage(String teamId, int pageNumber, int pageSize) {
         logger.debug "Getting players in team: ${teamId} page: ${pageNumber}"
 
         def url = "${LICHESS_API_TEMPLATE}/user?team=${teamId}&nb=${pageSize}&page=${pageNumber}"
@@ -33,7 +33,7 @@ class LichessApiImpl implements LichessApi {
     }
 
     @Override
-    getGames(String playerId, int pageNumber, int pageSize ) {
+    getGamesPage(String playerId, int pageNumber, int pageSize ) {
         logger.debug "Getting games for player: ${playerId} page: ${pageNumber}"
 
         def url = "${LICHESS_API_TEMPLATE}/user/${playerId}/games?nb=${pageSize}&page=${pageNumber}"
@@ -43,7 +43,7 @@ class LichessApiImpl implements LichessApi {
     }
 
     @Override
-    getGames(String playerId, String opponentId, int pageNumber, int pageSize) {
+    getGamesPage(String playerId, String opponentId, int pageNumber, int pageSize) {
         logger.debug "Getting games for player: ${playerId} opponent: ${opponentId} page: ${pageNumber}"
 
         def url = "${LICHESS_API_TEMPLATE}/games/vs/${playerId}/${opponentId}?nb=${pageSize}&page=${pageNumber}"

@@ -5,17 +5,17 @@ package com.chessmates.lichess.data
 interface LichessApi {
 
     /**
-     * Get the players of a given Lichess team.
+     * Get a page the players of a given Lichess team.
      */
-    def getPlayers(String teamId, int pageNumber, int pageSize)
+    def getPlayersPage(String teamId, int pageNumber, int pageSize)
 
     /**
-     * Get games of a given player.
+     * Get a page games of a given player.
      */
-    def getGames(String playerId, int pageNumber, int pageSize)
+    def getGamesPage(String playerId, int pageNumber, int pageSize)
 
     /**
-     * Get games for a given player, against a given opponent.
+     * Get a page of games for a given player, against a given opponent.
      */
-    def getGames(String playerId, String opponentId, int pageNumber, int pageSize)
+    def getGamesPage(String playerId, String opponentId, int pageNumber, int pageSize)
 }

@@ -31,7 +31,7 @@ class MockLichessMetaRepository implements MetaDataRepository {
         latestGamesForPlayers.put(new ImmutablePair(player, opponent), game)
     }
 
-    ImmutableMap getLatestGames() {
+    ImmutableMap<ImmutablePair, Object> getLatestGames() {
         logger.debug "(Mock) Fetching latest games"
         ImmutableMap.builder()
             .putAll(latestGamesForPlayers)

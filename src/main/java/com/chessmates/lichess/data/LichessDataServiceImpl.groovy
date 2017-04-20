@@ -46,7 +46,7 @@ class LichessDataServiceImpl implements LichessDataService {
     @Override
     List getPlayers() {
         final untilPlayer = metaDataRepository.getLatestPlayer()
-        final fetchPlayerPage = { String teamId, int pageNum -> lichessApi.getPlayers(teamId, pageNum, pageSizePlayers) }
+        final fetchPlayerPage = { String teamId, int pageNum -> lichessApi.getPlayersPage(teamId, pageNum, pageSizePlayers) }
         final stopAtPlayerId = { player ->
             if (!untilPlayer) false
             else  player.id == untilPlayer?.id
@@ -85,7 +85,7 @@ class LichessDataServiceImpl implements LichessDataService {
         final latestGameMap = metaDataRepository.getLatestGames()
 
         def fetchGamePage = { player, opponent, int pageNum ->
-            lichessApi.getGames(player.id, opponent.id, pageNum, pageSizeGames) }
+            lichessApi.getGamesPage(player.id, opponent.id, pageNum, pageSizeGames) }
 
         def gameIsLatest = { player, opponent, thisGame ->
             def latestGameForOpponents = latestGameMap.get(new ImmutablePair(player, opponent))

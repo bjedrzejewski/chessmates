@@ -1,6 +1,7 @@
 package com.chessmates.repository
 
 import com.google.common.collect.ImmutableMap
+import org.apache.commons.lang3.tuple.ImmutablePair
 
 /**
  * A service for storing & accessing information about the current state of Lichess data.
@@ -19,6 +20,6 @@ interface MetaDataRepository {
     /** Get the latest game request from the Lichess API for a given set of opponents.
      * ImmutableMap is returned to indicate that changes to this store don't affect the store contents.
      */
-    ImmutableMap getLatestGames()
+    ImmutableMap<ImmutablePair, Object> getLatestGames()
 
 }

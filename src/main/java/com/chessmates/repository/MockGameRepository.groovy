@@ -20,7 +20,7 @@ class MockGameRepository implements GameRepository {
     }
 
     @Override
-    Object find(String gameId) {
+    find(String gameId) {
         logger.debug "(Mock) Fetching game: ${gameId}"
         store.get(gameId)
     }
