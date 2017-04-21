@@ -32,10 +32,10 @@ class LichessDataScheduler {
         logger.debug "Starting Lichess data update: ${startTime} (${startTime.getTime()})"
 
         // TODO: Rename these functions, they are saving as a side affect and that isn't clear.
-        lichessDataService.getPlayers()
+        lichessDataService.updatePlayers()
 
         final players = entityService.getPlayers()
-        lichessDataService.getGames(players)
+        lichessDataService.updateGames(players)
 
         final endTime = new Date()
         logger.debug "Finished Lichess data update: ${endTime} (${endTime.getTime()})"

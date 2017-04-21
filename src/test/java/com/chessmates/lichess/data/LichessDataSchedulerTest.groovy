@@ -28,7 +28,7 @@ class LichessDataSchedulerTest extends Specification {
         lichessDataScheduler.updateData()
 
         then:
-        1 * lichessDataService.getGames(existingPlayers)
+        1 * lichessDataService.updateGames(existingPlayers)
     }
 
 }
