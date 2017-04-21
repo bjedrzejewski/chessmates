@@ -1,5 +1,6 @@
 package com.chessmates.lichess.data
 
+import com.chessmates.service.EntityService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,10 +18,12 @@ class LichessDataScheduler {
     private static final Logger logger = LoggerFactory.getLogger(LichessDataScheduler)
 
     LichessDataService lichessDataService
+    EntityService entityService
 
     @Autowired
-    LichessDataScheduler(LichessDataService lichessDataService) {
+    LichessDataScheduler(LichessDataService lichessDataService, EntityService entityService) {
         this.lichessDataService = lichessDataService
+        this.entityService = entityService
     }
 
     @Scheduled(initialDelay = 0L, fixedDelay = 3600000L)
@@ -29,7 +32,9 @@ class LichessDataScheduler {
         logger.debug "Starting Lichess data update: ${startTime} (${startTime.getTime()})"
 
         // TODO: Rename these functions, they are saving as a side affect and that isn't clear.
-        final players = lichessDataService.getPlayers()
+        lichessDataService.getPlayers()
+
+        final players = entityService.getPlayers()
         lichessDataService.getGames(players)
 
         final endTime = new Date()
