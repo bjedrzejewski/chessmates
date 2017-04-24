@@ -78,31 +78,31 @@ class LichessDataServiceImplTest extends Specification {
                 responseFile: 'scott-logic-users-2.json'
         )
         static final TF235_VS_OWENNW_INVALID = new MockEndpointInfo(
-                url: "https://en.lichess.org/api/games/vs/tf235/owennw?nb=${PAGE_SIZE_GAMES}&page=1",
+                url: "https://en.lichess.org/api/games/vs/tf235/owennw?nb=${PAGE_SIZE_GAMES}&page=1&with_analysis=1&with_moves=1&with_opening=1&with_movetimes=1&playing=0",
                 responseFile: 'tf235-vs-owennw-invalid.json'
         )
         static final TF235_VS_OWENNW_1 = new MockEndpointInfo(
-                url: "https://en.lichess.org/api/games/vs/tf235/owennw?nb=${PAGE_SIZE_GAMES}&page=1",
+                url: "https://en.lichess.org/api/games/vs/tf235/owennw?nb=${PAGE_SIZE_GAMES}&page=1&with_analysis=1&with_moves=1&with_opening=1&with_movetimes=1&playing=0",
                 responseFile: 'tf235-vs-owennw-1.json'
         )
         static final TF235_VS_OWENNW_2 = new MockEndpointInfo(
-                url: "https://en.lichess.org/api/games/vs/tf235/owennw?nb=${PAGE_SIZE_GAMES}&page=2",
+                url: "https://en.lichess.org/api/games/vs/tf235/owennw?nb=${PAGE_SIZE_GAMES}&page=2&with_analysis=1&with_moves=1&with_opening=1&with_movetimes=1&playing=0",
                 responseFile: 'tf235-vs-owennw-2.json'
         )
         static final TF235_VS_JEDRUS07_1 = new MockEndpointInfo(
-                url: "https://en.lichess.org/api/games/vs/tf235/jedrus07?nb=${PAGE_SIZE_GAMES}&page=1",
+                url: "https://en.lichess.org/api/games/vs/tf235/jedrus07?nb=${PAGE_SIZE_GAMES}&page=1&with_analysis=1&with_moves=1&with_opening=1&with_movetimes=1&playing=0",
                 responseFile: 'tf235-vs-jedrus07-1.json'
         )
         static final TF235_VS_JEDRUS07_2 = new MockEndpointInfo(
-                url: "https://en.lichess.org/api/games/vs/tf235/jedrus07?nb=${PAGE_SIZE_GAMES}&page=2",
+                url: "https://en.lichess.org/api/games/vs/tf235/jedrus07?nb=${PAGE_SIZE_GAMES}&page=2&with_analysis=1&with_moves=1&with_opening=1&with_movetimes=1&playing=0",
                 responseFile: 'tf235-vs-jedrus07-2.json'
         )
         static final OWENNW_VS_JEDRUS07_1 = new MockEndpointInfo(
-                url: "https://en.lichess.org/api/games/vs/owennw/jedrus07?nb=${PAGE_SIZE_GAMES}&page=1",
+                url: "https://en.lichess.org/api/games/vs/owennw/jedrus07?nb=${PAGE_SIZE_GAMES}&page=1&with_analysis=1&with_moves=1&with_opening=1&with_movetimes=1&playing=0",
                 responseFile: 'owennw-vs-jedrus07-1.json'
         )
         static final OWENNW_VS_JEDRUS07_2 = new MockEndpointInfo(
-                url: "https://en.lichess.org/api/games/vs/owennw/jedrus07?nb=${PAGE_SIZE_GAMES}&page=2",
+                url: "https://en.lichess.org/api/games/vs/owennw/jedrus07?nb=${PAGE_SIZE_GAMES}&page=2&with_analysis=1&with_moves=1&with_opening=1&with_movetimes=1&playing=0",
                 responseFile: 'owennw-vs-jedrus07-2.json'
         )
 

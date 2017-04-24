@@ -15,6 +15,7 @@ class LichessApiImpl implements LichessApi {
 
     private static final Logger logger = LoggerFactory.getLogger(LichessApiImpl)
     private static final String LICHESS_API_TEMPLATE = "https://en.lichess.org/api"
+    private static final String LICHESS_GAME_PARAMETERS = "&with_analysis=1&with_moves=1&with_opening=1&with_movetimes=1&playing=0"
 
     @Autowired
     HttpUtility httpUtility
@@ -36,7 +37,7 @@ class LichessApiImpl implements LichessApi {
     getGamesPage(String playerId, int pageNumber, int pageSize ) {
         logger.debug "Getting games for player: ${playerId} page: ${pageNumber}"
 
-        def url = "${LICHESS_API_TEMPLATE}/user/${playerId}/games?nb=${pageSize}&page=${pageNumber}"
+        def url = "${LICHESS_API_TEMPLATE}/user/${playerId}/games?nb=${pageSize}&page=${pageNumber}${LICHESS_GAME_PARAMETERS}"
 
         def json = httpUtility.get(url)
         new JsonSlurper().parseText(json)
@@ -46,7 +47,7 @@ class LichessApiImpl implements LichessApi {
     getGamesPage(String playerId, String opponentId, int pageNumber, int pageSize) {
         logger.debug "Getting games for player: ${playerId} opponent: ${opponentId} page: ${pageNumber}"
 
-        def url = "${LICHESS_API_TEMPLATE}/games/vs/${playerId}/${opponentId}?nb=${pageSize}&page=${pageNumber}"
+        def url = "${LICHESS_API_TEMPLATE}/games/vs/${playerId}/${opponentId}?nb=${pageSize}&page=${pageNumber}${LICHESS_GAME_PARAMETERS}"
 
         def json = httpUtility.get(url)
         new JsonSlurper().parseText(json)
