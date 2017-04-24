@@ -7,7 +7,6 @@ import com.chessmates.utility.HttpUtility
 import com.google.common.base.Charsets
 import com.google.common.collect.ImmutableMap
 import com.google.common.io.Resources
-import groovy.json.JsonSlurper
 import org.apache.commons.lang3.tuple.ImmutablePair
 import org.spockframework.spring.ScanScopedBeans
 import org.springframework.beans.factory.annotation.Autowired
@@ -393,7 +392,7 @@ class LichessDataServiceImplTest extends Specification {
         httpUtility.get(Helper.OWENNW_VS_JEDRUS07_2.url) >> Helper.loadFile(Helper.OWENNW_VS_JEDRUS07_2.responseFile)
 
         when:
-        final games = service.getGames(players)
+        final games = service.updateGames(players)
 
         then:
         // Test newest three games (all tf235 vs jedrus07)
