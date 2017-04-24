@@ -123,6 +123,7 @@ class LichessDataServiceImpl implements LichessDataService {
                 return games
             }
             .flatMap { gamePageResults -> gamePageResults.stream() }
+            .sorted((Comparator){ a, b -> b.lastMoveAt.compareTo(a.lastMoveAt) })
             .collect(Collectors.toList())
     }
 
