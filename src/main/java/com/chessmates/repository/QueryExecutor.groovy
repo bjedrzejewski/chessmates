@@ -6,5 +6,6 @@ package com.chessmates.repository
 
 interface QueryExecutor {
     void executeInsert(givenTableName, givenItems)
+    def executeSelect(givenTableName)
     def executeSelect(givenTableName, givenId)
 }
