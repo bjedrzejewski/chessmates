@@ -123,8 +123,10 @@ class LichessDataServiceImplTest extends Specification {
     @Autowired
     HttpUtility httpUtility
 
+    @Autowired
     PlayerRepository playerRepository
 
+    @Autowired
     GameRepository gameRepository
 
     @Autowired
