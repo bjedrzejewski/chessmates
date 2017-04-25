@@ -4,6 +4,7 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.postgresql.util.PGobject
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Component
 
 import java.sql.DriverManager
@@ -14,6 +15,7 @@ import java.sql.ResultSet
  */
 
 @Component
+@Primary
 class RdsQueryExecutor implements QueryExecutor {
 
     @Value('${chessmates.rds.dbName}')

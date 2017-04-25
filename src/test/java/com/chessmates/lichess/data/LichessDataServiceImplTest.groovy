@@ -1,10 +1,11 @@
 package com.chessmates.lichess.data
 
+import com.chessmates.controller.GameController
 import com.chessmates.repository.GameRepository
 import com.chessmates.repository.MetaDataRepository
-import com.chessmates.repository.MockGameRepository
-import com.chessmates.repository.MockPlayerRepository
 import com.chessmates.repository.PlayerRepository
+import com.chessmates.repository.QueryExecutor
+import com.chessmates.service.EntityService
 import com.chessmates.utility.HttpUtility
 import com.google.common.base.Charsets
 import com.google.common.collect.ImmutableMap
@@ -51,6 +52,10 @@ class LichessDataServiceImplTest extends Specification {
             detatchedMockFactory.Mock(MetaDataRepository)
         }
 
+        @Bean
+        QueryExecutor queryExecutor(){
+            detatchedMockFactory.Mock(QueryExecutor)
+        }
     }
 
     private static class Helper {
@@ -117,30 +122,25 @@ class LichessDataServiceImplTest extends Specification {
     }
 
     @Subject
+    @Autowired
     LichessDataServiceImpl service
 
     @Autowired
     HttpUtility httpUtility
 
-
+    @Autowired
     PlayerRepository playerRepository
 
-
+    @Autowired
     GameRepository gameRepository
 
     @Autowired
     MetaDataRepository metaDataRepository
 
-    @Autowired
-    LichessApi lichessApi
-
     def setup() {
         // Set smaller page sizes as we provide data for these pages sizes.
         ReflectionTestUtils.setField(service, 'pageSizePlayers', Helper.PAGE_SIZE_USERS)
         ReflectionTestUtils.setField(service, 'pageSizeGames', Helper.PAGE_SIZE_GAMES)
-        gameRepository = new MockGameRepository()
-        playerRepository = new MockPlayerRepository()
-        service = new LichessDataServiceImpl(lichessApi, playerRepository, gameRepository, metaDataRepository)
     }
 
     def noLatestGames() {
@@ -225,10 +225,6 @@ class LichessDataServiceImplTest extends Specification {
 
         then:
         1 * playerRepository.saveAll(_)
-//        1 * playerRepository.save({ it.id == 'riciardos' })
-//        1 * playerRepository.save({ it.id == 'samei07' })
-//        1 * playerRepository.save({ it.id == 'sydeman' })
-//        1 * playerRepository.save({ it.id == 'torrlane' })
     }
 
     def "saves latest player when players are fetched"() {
