@@ -374,4 +374,37 @@ class LichessDataServiceImplTest extends Specification {
         1 * metaDataRepository.saveLatestGame({ it.id == 'owennw' }, { it.id == 'jedrus07' }, { it.id == '1J73NgR1' })
     }
 
+    def "games are sorted by last move"() {
+        given:
+        final players = [
+                [id: 'tf235'],
+                [id: 'owennw'],
+                [id: 'jedrus07']
+        ]
+
+        and:
+        noLatestGames()
+        httpUtility.get(Helper.TF235_VS_OWENNW_1.url) >> Helper.loadFile(Helper.TF235_VS_OWENNW_1.responseFile)
+        httpUtility.get(Helper.TF235_VS_OWENNW_2.url) >> Helper.loadFile(Helper.TF235_VS_OWENNW_2.responseFile)
+        httpUtility.get(Helper.TF235_VS_JEDRUS07_1.url) >> Helper.loadFile(Helper.TF235_VS_JEDRUS07_1.responseFile)
+        httpUtility.get(Helper.TF235_VS_JEDRUS07_2.url) >> Helper.loadFile(Helper.TF235_VS_JEDRUS07_2.responseFile)
+        httpUtility.get(Helper.OWENNW_VS_JEDRUS07_1.url) >> Helper.loadFile(Helper.OWENNW_VS_JEDRUS07_1.responseFile)
+        httpUtility.get(Helper.OWENNW_VS_JEDRUS07_2.url) >> Helper.loadFile(Helper.OWENNW_VS_JEDRUS07_2.responseFile)
+
+        when:
+        final games = service.updateGames(players)
+
+        then:
+        // Test newest three games (all tf235 vs jedrus07)
+        games[0].id == 'uP0rXPYL'
+        games[1].id == 'wRJFs6zn'
+        games[2].id == 'UxkkULFV'
+
+        // Test newest of owennw vs tf235
+        games[8].id == 'OBBHfGOC'
+
+        // Test newest of owennw vs jedrus
+        games[9].id == '1J73NgR1'
+    }
+
 }
