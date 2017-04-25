@@ -117,20 +117,22 @@ class LichessDataServiceImplTest extends Specification {
     }
 
     @Subject
-    @Autowired
     LichessDataServiceImpl service
 
     @Autowired
     HttpUtility httpUtility
 
-    @Autowired
+
     PlayerRepository playerRepository
 
-    @Autowired
+
     GameRepository gameRepository
 
     @Autowired
     MetaDataRepository metaDataRepository
+
+    @Autowired
+    LichessApi lichessApi
 
     def setup() {
         // Set smaller page sizes as we provide data for these pages sizes.
@@ -138,6 +140,7 @@ class LichessDataServiceImplTest extends Specification {
         ReflectionTestUtils.setField(service, 'pageSizeGames', Helper.PAGE_SIZE_GAMES)
         gameRepository = new MockGameRepository()
         playerRepository = new MockPlayerRepository()
+        service = new LichessDataServiceImpl(lichessApi, playerRepository, gameRepository, metaDataRepository)
     }
 
     def noLatestGames() {
