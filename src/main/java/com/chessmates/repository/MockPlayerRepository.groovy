@@ -14,13 +14,12 @@ class MockPlayerRepository implements PlayerRepository {
     private Map store = new HashMap()
 
     @Override
-    void save(player) {
-        logger.debug "(Mock) Saving player: ${player}"
-        store.put(player.id, player)
+    void saveAll(Object players) {
+
     }
 
     @Override
-    find(String playerId) {
+    def find(Object playerId) {
         logger.debug "(Mock) Fetching player: ${playerId}"
         store.get(playerId)
     }

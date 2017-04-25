@@ -14,7 +14,7 @@ class MockGameRepository implements GameRepository {
     Map store = new HashMap()
 
     @Override
-    void save(game) {
+    void saveAll(game) {
         logger.debug "(Mock) Saving game: ${game}"
         store.put(game.id, game)
     }
@@ -26,7 +26,7 @@ class MockGameRepository implements GameRepository {
     }
 
     @Override
-    List findAll() {
+    def findAll() {
         new ArrayList(store.values())
     }
 }
