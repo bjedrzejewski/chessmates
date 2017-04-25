@@ -219,11 +219,11 @@ class LichessDataServiceImplTest extends Specification {
         service.updatePlayers()
 
         then:
-        1 * playerRepository.save({ it.id == 'jfaker' })
-        1 * playerRepository.save({ it.id == 'riciardos' })
-        1 * playerRepository.save({ it.id == 'samei07' })
-        1 * playerRepository.save({ it.id == 'sydeman' })
-        1 * playerRepository.save({ it.id == 'torrlane' })
+        1 * playerRepository.saveAll(_)
+//        1 * playerRepository.save({ it.id == 'riciardos' })
+//        1 * playerRepository.save({ it.id == 'samei07' })
+//        1 * playerRepository.save({ it.id == 'sydeman' })
+//        1 * playerRepository.save({ it.id == 'torrlane' })
     }
 
     def "saves latest player when players are fetched"() {
@@ -347,7 +347,7 @@ class LichessDataServiceImplTest extends Specification {
         service.updateGames(players)
 
         then:
-        56 * gameRepository.save(_)
+        1 * gameRepository.saveAll(_)
     }
 
     def "saves latest game for each player when games are fetched"() {
