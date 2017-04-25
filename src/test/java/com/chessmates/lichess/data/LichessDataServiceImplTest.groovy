@@ -2,6 +2,8 @@ package com.chessmates.lichess.data
 
 import com.chessmates.repository.GameRepository
 import com.chessmates.repository.MetaDataRepository
+import com.chessmates.repository.MockGameRepository
+import com.chessmates.repository.MockPlayerRepository
 import com.chessmates.repository.PlayerRepository
 import com.chessmates.utility.HttpUtility
 import com.google.common.base.Charsets
@@ -121,10 +123,8 @@ class LichessDataServiceImplTest extends Specification {
     @Autowired
     HttpUtility httpUtility
 
-    @Autowired
     PlayerRepository playerRepository
 
-    @Autowired
     GameRepository gameRepository
 
     @Autowired
@@ -134,6 +134,8 @@ class LichessDataServiceImplTest extends Specification {
         // Set smaller page sizes as we provide data for these pages sizes.
         ReflectionTestUtils.setField(service, 'pageSizePlayers', Helper.PAGE_SIZE_USERS)
         ReflectionTestUtils.setField(service, 'pageSizeGames', Helper.PAGE_SIZE_GAMES)
+        gameRepository = new MockGameRepository()
+        playerRepository = new MockPlayerRepository()
     }
 
     def noLatestGames() {
