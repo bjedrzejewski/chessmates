@@ -4,6 +4,6 @@ package com.chessmates.repository
  */
 interface PlayerRepository {
     void saveAll(players)
-    def find(playerId)
-    def findAll()
+    def find(String playerId)
+    List findAll()
 }

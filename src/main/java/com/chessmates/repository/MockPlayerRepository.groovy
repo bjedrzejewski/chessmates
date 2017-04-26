@@ -19,7 +19,7 @@ class MockPlayerRepository implements PlayerRepository {
     }
 
     @Override
-    def find(Object playerId) {
+    def find(String playerId) {
         logger.debug "(Mock) Fetching player: ${playerId}"
         store.get(playerId)
     }

@@ -30,12 +30,12 @@ class RdsPlayerRepository implements PlayerRepository {
     }
 
     @Override
-    def find(Object playerId) {
+    def find(String playerId) {
         queryExecutor.executeSelect("players", playerId)
     }
 
     @Override
-    def findAll() {
+    List findAll() {
         queryExecutor.executeSelect("players")
     }
 }

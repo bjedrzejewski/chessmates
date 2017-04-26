@@ -26,7 +26,7 @@ class RdsGameRespository implements GameRepository{
     }
 
     @Override
-    def findAll() {
+    List findAll() {
         queryExecutor.executeSelect("games")
     }
 }

@@ -5,5 +5,5 @@ package com.chessmates.repository
 interface GameRepository {
     void saveAll(game)
     def find(String gameId)
-    def findAll()
+    List findAll()
 }

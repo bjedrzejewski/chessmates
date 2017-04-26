@@ -26,7 +26,7 @@ class MockGameRepository implements GameRepository {
     }
 
     @Override
-    def findAll() {
+    List findAll() {
         new ArrayList(store.values())
     }
 }

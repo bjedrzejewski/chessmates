@@ -62,7 +62,7 @@ class LichessDataServiceImpl implements LichessDataService {
                 .filter(LichessEntityValidator.&isValid)
                 .collect(Collectors.toList())
 
-        playerRepository.&saveAll(players)
+        playerRepository.saveAll(players)
         if (players.size()) {
             metaDataRepository.saveLatestPlayer(players.first())
         }
@@ -115,7 +115,7 @@ class LichessDataServiceImpl implements LichessDataService {
                         .filter(LichessEntityValidator.&isValid)
                         .collect(Collectors.toList())
 
-                gameRepository.&saveAll(games)
+                gameRepository.saveAll(games)
                 if (games.size()) {
                     metaDataRepository.saveLatestGame(player, opponent, games.first())
                 }

@@ -1,11 +1,9 @@
 package com.chessmates.lichess.data
 
-import com.chessmates.controller.GameController
 import com.chessmates.repository.GameRepository
 import com.chessmates.repository.MetaDataRepository
 import com.chessmates.repository.PlayerRepository
 import com.chessmates.repository.QueryExecutor
-import com.chessmates.service.EntityService
 import com.chessmates.utility.HttpUtility
 import com.google.common.base.Charsets
 import com.google.common.collect.ImmutableMap
@@ -50,11 +48,6 @@ class LichessDataServiceImplTest extends Specification {
         @Bean
         MetaDataRepository metaDataRepository() {
             detatchedMockFactory.Mock(MetaDataRepository)
-        }
-
-        @Bean
-        QueryExecutor queryExecutor(){
-            detatchedMockFactory.Mock(QueryExecutor)
         }
     }
 
@@ -224,7 +217,7 @@ class LichessDataServiceImplTest extends Specification {
         service.updatePlayers()
 
         then:
-        1 * playerRepository.saveAll(_)
+        1 * metaDataRepository.saveLatestPlayer({it.id == 'jfaker'})
     }
 
     def "saves latest player when players are fetched"() {
@@ -348,7 +341,7 @@ class LichessDataServiceImplTest extends Specification {
         service.updateGames(players)
 
         then:
-        1 * gameRepository.saveAll(_)
+        3 * gameRepository.saveAll(_)
     }
 
     def "saves latest game for each player when games are fetched"() {

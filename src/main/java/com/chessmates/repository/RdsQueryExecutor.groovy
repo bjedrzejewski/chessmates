@@ -15,7 +15,6 @@ import java.sql.ResultSet
  */
 
 @Component
-@Primary
 class RdsQueryExecutor implements QueryExecutor {
 
     @Value('${chessmates.rds.dbName}')
@@ -51,6 +50,8 @@ class RdsQueryExecutor implements QueryExecutor {
                 def itemsInserted = stmt.executeUpdate()
                 [stmt, itemsInserted]
         }
+
+        if(givenItems.size() <= 0) return
 
         executeQuery(prepareAndInvokeInsertStatement)
     }
