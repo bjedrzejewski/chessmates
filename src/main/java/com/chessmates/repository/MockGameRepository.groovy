@@ -15,7 +15,11 @@ class MockGameRepository implements GameRepository {
 
     @Override
     void saveAll(games) {
-
+        games.collect({
+            it ->
+                logger.debug "(Mock) Saving game: ${it}"
+                store.put(it.id, it)
+        })
     }
 
     @Override
