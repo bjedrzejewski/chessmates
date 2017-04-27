@@ -57,7 +57,7 @@ class RdsQueryExecutor implements QueryExecutor {
     }
 
     @Override
-    def executeSelect(givenTableName, givenId = null) {
+    List executeSelect(givenTableName, givenId = null) {
         def prepareAndInvokeSelectStatement = {
             conn ->
                 def stmt = conn.prepareStatement("SELECT data FROM ${givenTableName}" + (givenId ? " WHERE data->>'id' = '${givenId}'" : ""));
@@ -103,14 +103,10 @@ class RdsQueryExecutor implements QueryExecutor {
                 outputObject
         }
 
-        //lambda placeholder
-        def populateNone = {
 
-        }
+        //we only populate if it was a select query in which case it returns a result set
+        if(!(item instanceof ResultSet)) return
 
-        //we only populate if it was a select query inwhich case it returns a result set
-        def returnValue = item instanceof ResultSet ? populateOutputObject(item) : populateNone
-
-        returnValue
+        populateOutputObject(item)
     }
 }

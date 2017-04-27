@@ -199,7 +199,14 @@ class LichessDataServiceImplTest extends Specification {
         service.updatePlayers()
 
         then:
-        1 * playerRepository.saveAll(_)
+        1 * playerRepository.saveAll(
+                {
+                    it[0].id == "jfaker" &&
+                    it[1].id == "riciardos" &&
+                    it[2].id == "samei07" &&
+                    it[3].id == "sydeman" &&
+                    it[4].id == "torrlane"
+                })
     }
 
     def "saves latest player when players are fetched"() {
