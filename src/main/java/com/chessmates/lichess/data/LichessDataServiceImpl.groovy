@@ -37,6 +37,13 @@ class LichessDataServiceImpl implements LichessDataService {
         this.metaDataRepository = metaDataRepository
     }
 
+    LichessDataServiceImpl(LichessApi lichessApi, PlayerRepository playerRepository, GameRepository gameRepository, MetaDataRepository metaDataRepository){
+        this.lichessApi = lichessApi
+        this.playerRepository = playerRepository
+        this.gameRepository = gameRepository
+        this.metaDataRepository = metaDataRepository
+    }
+
     /**
      * Get new players from the Lichess APi up until the provided player ID. If no latest player is provided, all Lichess
      * players will be fetched

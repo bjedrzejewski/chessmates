@@ -13,7 +13,6 @@ import java.sql.DriverManager;
  * Repository that exposes all player related data operation
  * This particular implementation is utilising PostGreSql DB hosted on AWS
  */
-
 @Repository
 @Primary
 class RdsPlayerRepository implements PlayerRepository {

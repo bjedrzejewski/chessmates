@@ -2,8 +2,10 @@ package com.chessmates.lichess.data
 
 import com.chessmates.repository.GameRepository
 import com.chessmates.repository.MetaDataRepository
+import com.chessmates.repository.MockGameRepository
+import com.chessmates.repository.MockLichessMetaRepository
+import com.chessmates.repository.MockPlayerRepository
 import com.chessmates.repository.PlayerRepository
-import com.chessmates.repository.QueryExecutor
 import com.chessmates.utility.HttpUtility
 import com.google.common.base.Charsets
 import com.google.common.collect.ImmutableMap
@@ -24,33 +26,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = NONE)
 @ScanScopedBeans
 class LichessDataServiceImplTest extends Specification {
-
-    @TestConfiguration
-    private static class MockConfig {
-
-        final detatchedMockFactory = new DetachedMockFactory()
-
-        @Bean
-        HttpUtility httpUtility() {
-            detatchedMockFactory.Mock(HttpUtility)
-        }
-
-        @Bean
-        PlayerRepository playerRepository() {
-            detatchedMockFactory.Mock(PlayerRepository)
-        }
-
-        @Bean
-        GameRepository gameRepository() {
-            detatchedMockFactory.Mock(GameRepository)
-        }
-
-        @Bean
-        MetaDataRepository metaDataRepository() {
-            detatchedMockFactory.Mock(MetaDataRepository)
-        }
-    }
-
     private static class Helper {
 
         static class MockEndpointInfo {
@@ -115,22 +90,29 @@ class LichessDataServiceImplTest extends Specification {
     }
 
     @Subject
-    @Autowired
     LichessDataServiceImpl service
 
-    @Autowired
+    LichessApi api
+
     HttpUtility httpUtility
 
-    @Autowired
     PlayerRepository playerRepository
 
-    @Autowired
     GameRepository gameRepository
 
-    @Autowired
     MetaDataRepository metaDataRepository
 
     def setup() {
+        api = new LichessApiImpl()
+        httpUtility = Mock(HttpUtility)
+        playerRepository = Mock(PlayerRepository)
+        gameRepository = Mock(GameRepository)
+        metaDataRepository = Mock(MetaDataRepository)
+
+        api.httpUtility = httpUtility
+
+        service = new LichessDataServiceImpl(api, playerRepository, gameRepository, metaDataRepository)
+
         // Set smaller page sizes as we provide data for these pages sizes.
         ReflectionTestUtils.setField(service, 'pageSizePlayers', Helper.PAGE_SIZE_USERS)
         ReflectionTestUtils.setField(service, 'pageSizeGames', Helper.PAGE_SIZE_GAMES)
@@ -217,13 +199,15 @@ class LichessDataServiceImplTest extends Specification {
         service.updatePlayers()
 
         then:
-        1 * metaDataRepository.saveLatestPlayer({it.id == 'jfaker'})
+        1 * playerRepository.saveAll(_)
     }
 
     def "saves latest player when players are fetched"() {
         given:
         httpUtility.get(Helper.SCOTT_LOGIC_TEAM_1.url) >> Helper.loadFile(Helper.SCOTT_LOGIC_TEAM_1.responseFile)
         httpUtility.get(Helper.SCOTT_LOGIC_TEAM_2.url) >> Helper.loadFile(Helper.SCOTT_LOGIC_TEAM_2.responseFile)
+
+
 
         when:
         service.updatePlayers()
