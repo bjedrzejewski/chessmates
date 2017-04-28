@@ -332,7 +332,9 @@ class LichessDataServiceImplTest extends Specification {
         service.updateGames(players)
 
         then:
-        3 * gameRepository.saveAll(_)
+        1 * gameRepository.saveAll({it.size() == 20})
+        1 * gameRepository.saveAll({it.size() == 20})
+        1 * gameRepository.saveAll({it.size() == 16})
     }
 
     def "saves latest game for each player when games are fetched"() {
