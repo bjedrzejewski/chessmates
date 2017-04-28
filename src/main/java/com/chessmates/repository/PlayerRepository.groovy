@@ -3,9 +3,7 @@ package com.chessmates.repository
  * A repository for Player models.
  */
 interface PlayerRepository {
-
-    void save(player)
+    void saveAll(players)
     def find(String playerId)
     List findAll()
-
 }
